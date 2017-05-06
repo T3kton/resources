@@ -1,0 +1,10 @@
+#ifndef CONFIG_LOCAL_SETTINGS_H
+#define CONFIG_LOCAL_SETTINGS_H
+
+#define       PCI_SETTINGS
+#undef        CPUID_SETTINGS
+#undef        MEMMAP_SETTINGS
+#define       VMWARE_SETTINGS
+#undef        VRAM_SETTINGS
+
+#endif /* CONFIG_LOCAL_SETTINGS_H */

@@ -1,0 +1,12 @@
+#ifndef CONFIG_LOCAL_CONSOLE_H
+#define CONFIG_LOCAL_CONSOLE_H
+
+#define CONSOLE_PCBIOS
+
+#ifdef T3KTON_SOL
+
+#define CONSOLE_SERIAL
+
+#endif /* T3TKTON_SOL */
+
+#endif /* CONFIG_LOCAL_CONSOLE_H */

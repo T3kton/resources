@@ -1,0 +1,28 @@
+#!ipxe
+:top
+
+prompt --key s --timeout 5000 Press 's' for shell && goto do_shell ||
+
+echo mac.........${net0/mac}
+dhcp net0
+
+echo hostname:...${net0/hostname}
+echo ip address:.${net0/ip}
+echo gateway ip:.${net0/gateway}
+echo netmask:....${net0/netmask}
+echo dns server:.${net0/dns}
+echo domain:.....${net0/domain}
+echo dhcp server:${net0/dhcp-server}
+echo syslog svr.:${net0/syslog}
+echo Routing Table:
+route
+
+echo Getting Boot Script
+chain http://192.168.200.1:8888/config/boot_script/
+
+:do_shell
+echo Dropping to iPXE shell, docs at http://ipxe.org/cmd
+echo You probably want to "dhcp net0" first
+echo Type "exit" to continue with the boot process.
+shell
+goto top
