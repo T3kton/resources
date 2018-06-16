@@ -18,7 +18,7 @@ echo Routing Table:
 route
 
 echo Getting Boot Script
-chain http://192.168.200.1:8888/config/boot_script/
+chain http://contractor/config/boot_script/
 
 :do_shell
 echo Dropping to iPXE shell, docs at http://ipxe.org/cmd
