@@ -25,8 +25,8 @@
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
-kernel http://{{ pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us domain={{ domain }} hostname={{ hostname }}
-initrd http://{{ pxe_location }}/ubuntu-installer/initrd
+kernel http://{{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us domain={{ domain }} hostname={{ hostname }}
+initrd http://{{ __pxe_location }}/ubuntu-installer/initrd
 boot
 """
   template = """

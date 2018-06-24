@@ -45,6 +45,7 @@ source.touch:
 
 clean:
 	$(RM) -r bin
+	$(MAKE) -C src veryclean
 
 full-clean: clean
 	$(RM) -r github_source
