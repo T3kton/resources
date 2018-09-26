@@ -1,7 +1,11 @@
 [ structure.ubuntu-base ]
   description = 'Base Ubuntu'
   parents = [ 'linux-base' ]
-  config_values = { 'installer_pxe' = 'ubuntu', 'mirror_server' = 'us.archive.ubuntu.com', 'distro' = 'ubuntu' }
+[ structure.ubunu-base.config_values ]
+  installer_pxe = 'ubuntu'
+  mirror_server = 'us.archive.ubuntu.com'
+  distro = 'ubuntu'
+  vcenter_guest_id = 'ubuntu64Guest'
 
 [ structure.ubuntu-precise-base ]
   description = 'Base Ubuntu Precise Pangolin (12.04 LTS)'
@@ -118,6 +122,6 @@ d-i debian-installer/exit/poweroff boolean true
 d-i preseed/early_command string /bin/killall.sh; /bin/netcfg
 
 {% if postinstall_script %}
-d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
 {% endif %}
 """
