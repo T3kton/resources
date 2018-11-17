@@ -1,0 +1,64 @@
+#!/bin/bash
+
+set -e
+
+#  should match __pxe_location
+if [ "x$URI_PATH" = "x" ]
+then
+  URI_PATH=http://static/pxe
+fi
+
+# the local on disk path for __pxe_location
+if [ "x$TARGET_DIR" = "x" ]
+then
+  TARGET_DIR=/var/www/static/pxe
+fi
+
+if [ ! $( which xorriso ) ]
+then
+  echo "xorriso not found, please install"
+  exit 1
+fi
+
+if [ "x$1" = "x" ]
+then
+  echo "Specify a iso file"
+  exit 1
+fi
+
+if [ ! -r $1 ] || [ $( file -b --mime-type $1 ) != "application/x-iso9660-image" ]
+then
+  echo "$1 must be readable and an iso file"
+  exit 1
+fi
+
+echo "Cleaning up old..."
+if [ -d $TARGET_DIR/esxi ]
+then
+  rm -f $TARGET_DIR/esxi/*
+else
+  mkdir -p $TARGET_DIR/esxi
+fi
+
+echo "Extracting ISO..."
+file_list=$( xorriso -osirrox on -indev $1 -lsl | grep -v '^d' | grep -v \.DISCINFO | awk '{print $9}' )
+if [ "x$file_list" = "x" ]
+then
+  echo "Error getting file list from iso"
+  exit 1
+fi
+
+for file in $file_list;
+do
+  # xorriso list adds ' arround the name, strip that
+  file=${file//\'/}
+  target_file=$( echo $file | tr '[:upper:]' '[:lower:]' )
+  echo "extracting $target_file..."
+  xorriso -osirrox on -indev $1 -extract_single $file $TARGET_DIR/esxi/$target_file 2> /dev/null
+done
+
+echo "Configuring boot.cfg..."
+sed s#/#${URI_PATH}/esxi\/#g -i $TARGET_DIR/esxi/boot.cfg
+sed s/"kernelopt=runweasel"/""/ -i $TARGET_DIR/esxi/boot.cfg
+
+echo "Done"

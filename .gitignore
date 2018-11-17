@@ -1,0 +1,7 @@
+build
+
+centos-pxe
+ubuntu-pxe
+respkg
+
+*.respkg

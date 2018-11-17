@@ -8,26 +8,31 @@ TARGET_LIST := $(foreach console,  $(CONSOLE_TYPES), bin/undionly_$(console).kpx
 all: $(TARGET_LIST)
 
 bin/undionly_console.kpxe: script.ipxe source.touch
+	mkdir -p bin
 	$(MAKE) -C src veryclean
 	env -i PATH=$(PATH) $(MAKE) $(MFLAGS) -C src bin/undionly.kpxe EMBED=../../script.ipxe EXTRAVERSION="+(console)" $(DEBUG_OPS)
 	cp src/bin/undionly.kpxe bin/undionly_console.kpxe
 
 bin/undionly_ttys0.kpxe: script.ipxe source.touch
+	mkdir -p bin
 	$(MAKE) -C src veryclean
 	env -i PATH=$(PATH) $(MAKE) $(MFLAGS) -C src bin/undionly.kpxe EMBED=../../script.ipxe EXTRAVERSION="+(ttys0)" T3KTON_SOL=0 $(DEBUG_OPS)
 	cp bin/undionly.kpxe bin/undionly_ttys0.kpxe
 
 bin/undionly_ttys1.kpxe: script.ipxe source.touch
+	mkdir -p bin
 	$(MAKE) -C src veryclean
 	env -i PATH=$(PATH) $(MAKE) $(MFLAGS) -C src bin/undionly.kpxe EMBED=../../script.ipxe EXTRAVERSION="+(ttys1)" T3KTON_SOL=1 $(DEBUG_OPS)
 	cp bin/undionly.kpxe bin/undionly_ttys1.kpxe
 
 bin/undionly_ttys2.kpxe: script.ipxe source.touch
+	mkdir -p bin
 	$(MAKE) -C src veryclean
 	env -i PATH=$(PATH) $(MAKE) $(MFLAGS) -C src bin/undionly.kpxe EMBED=../../script.ipxe EXTRAVERSION="+(ttys2)" T3KTON_SOL=2 $(DEBUG_OPS)
 	cp bin/undionly.kpxe bin/undionly_ttys2.kpxe
 
 bin/undionly_ttys3.kpxe: script.ipxe source.touch
+	mkdir -p bin
 	$(MAKE) -C src veryclean
 	env -i PATH=$(PATH) $(MAKE) $(MFLAGS) -C src bin/undionly.kpxe EMBED=../../script.ipxe EXTRAVERSION="+(ttys3)" T3KTON_SOL=3 $(DEBUG_OPS)
 	cp bin/undionly.kpxe bin/undionly_ttys3.kpxe
@@ -39,7 +44,8 @@ source.touch:
 	touch source.touch
 
 clean:
-	$(RM) bin/*.kpxe
+	$(RM) -r bin
+	$(MAKE) -C src veryclean
 
 full-clean: clean
 	$(RM) -r github_source

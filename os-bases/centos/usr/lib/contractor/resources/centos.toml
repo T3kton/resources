@@ -1,0 +1,17 @@
+[ structure.centos-base ]
+  description = 'Base CentOS'
+  parents = [ 'linux-base' ]
+[ structure.centos-base.config_values ]
+  installer_pxe = 'centos'
+  mirror_server = 'mirror.centos.org'
+  distro = 'centos'
+
+[ structure.centos-6-base]
+  description = 'Base CentOS 6'
+  parents = [ 'centos-base' ]
+  config_values = { 'distro_version' = '6', vcenter_guest_id = 'rhel6_64Guest' }
+
+[ structure.centos-7-base]
+  description = 'Base CentOS 7'
+  parents = [ 'centos-base' ]
+  config_values = { 'distro_version' = '7', vcenter_guest_id = 'rhel7_64Guest' }

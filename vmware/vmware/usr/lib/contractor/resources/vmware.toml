@@ -1,0 +1,121 @@
+sflinks = [
+            [ 'vmware-esx-base', 'vcenter-vm-base' ],
+            [ 'vmware-esx-base', 'manual-foundation-base' ],
+            [ 'vmware-esx-base', 'amt-base' ],
+            [ 'vmware-esx-base', 'ipmi-base' ],
+            [ 'vmware-esx-base', 'virtualbox-vm-base' ],
+            [ 'vmware-vca-base', 'vcenter-vm-base' ],
+            [ 'vmware-vca-base', 'virtualbox-vm-base' ]
+          ]
+
+[ structure.vmware-esx-base ]
+  description = 'Base ESXi'
+  scripts = { 'create' = 'create-esx', 'destroy' = 'destroy-esx' }
+[ structure.vmware-esx-base.config_values ]
+    root_pass = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
+    memory_size = 4096
+    cpu_count = 2
+    disk_provisioning = 'thin'
+    vcenter_network_interface_class = 'VMXNet3'
+    vcenter_guest_id = 'vmkernel6Guest'
+    vcenter_virtual_exec_usage = 'on'
+    vcenter_virtual_mmu_usage = 'on'
+    datastore_list = []
+
+[ script.create-esx ]
+  description = 'Install ESXi'
+  script = """# pxe boot and install
+dhcp.set_pxe( interface=structure.provisioning_interface, pxe='esx' )
+foundation.power_on()
+delay( seconds=120 )
+foundation.wait_for_poweroff()
+
+dhcp.set_pxe( interface=structure.provisioning_interface, pxe='normal-boot' )
+foundation.power_on()
+
+iputils.wait_for_port( target=structure.provisioning_ip, port=80 )
+
+datastore_list = config.datastore_list
+while len( array=datastore_list ) do
+begin()
+  datastore = pop( array=datastore_list )
+  vcenter.create_datastore( name=datastore[ 'name' ], model=datastore[ 'model' ] )
+end
+"""
+
+[ script.destroy-esx ]
+  description = 'Uninstall ESXi'
+  script = """# nothing to do, foundation cleanup should wipe/destroy the disks
+foundation.power_off()
+#eventually pxe boot to MBR wipper
+"""
+
+[ pxe.esx ]
+  boot_script = """echo ESX Installer
+kernel -n mboot.c32 {{ __pxe_location }}esxi/mboot.c32
+imgargs mboot.c32 -c {{ __pxe_location }}esxi/boot.cfg ks={{ __pxe_template_location }}
+boot mboot.c32
+"""
+  template = """{% set network = _interface_map[ _provisioning_interface ].address_list.0 %}
+accepteula
+
+rootpw --iscrypted {{ root_pass }}
+
+clearpart --alldrives --overwritevmfs
+
+install --firstdisk --overwritevmfs
+#install --firstdisk=usb --overwritevmfs
+
+network --bootproto=static --ip={{ network.address }} --netmask={{ network.netmask }}{% if network.gateway %} --gateway={{ network.gateway }}{% endif %} --nameserver={{ dns_servers.0 }} --hostname={{ _hostname }}
+
+%post --interpreter=busybox
+/sbin/poweroff
+"""
+
+[ structure.vmware-vca-base ]
+  description = 'Base VCA'
+  scripts = { 'create' = 'create-vca', 'destroy' = 'destroy-vca' }
+[ structure.vmware-vca-base.config_values ]
+  root_pass_plain = 'VMware1!'
+  ova = '{{ __pxe_location }}vmware/vcenter.ova'
+  cpu_count = 2
+  memory_size = 4096
+  disk_provisioning = 'thin'
+  vcenter_deployment_option = 'tiny'  # tiny,small,medium,large,management-tiny,management-small,management-medium,management-large,infrastructure
+  vcenter_ip_protocol = 'IPv4'
+[ structure.vmware-vca-base.config_values.vcenter_property_map ]
+  'guestinfo.cis.appliance.net.addr.family' = 'ipv4'
+  'guestinfo.cis.appliance.net.mode'        = 'static'
+  'guestinfo.cis.appliance.net.addr'        = '{{ _foundation_interface_list.0.address_list.0.address }}'
+  'guestinfo.cis.appliance.net.pnid'        = '{{ _fqdn }}'
+  'guestinfo.cis.appliance.net.prefix'      = '{{ _foundation_interface_list.0.address_list.0.prefix }}'
+  'guestinfo.cis.appliance.net.gateway'     = '{{ _foundation_interface_list.0.address_list.0.gateway }}'
+  'guestinfo.cis.appliance.net.dns.servers' = '{{ dns_servers|join( "," ) }}'
+  #'guestinfo.cis.appliance.ntp.servers'     = '{{ ntp_servers|join( "," ) }}'
+  'guestinfo.cis.appliance.time.tools-sync' = 'True'
+  'guestinfo.cis.appliance.root.passwd'     = '{{ root_pass_plain }}'
+  'guestinfo.cis.appliance.ssh.enabled'     = 'True'
+  'guestinfo.cis.vmdir.domain-name'         = '{{ domain_name }}'
+  'guestinfo.cis.vmdir.site-name'           = '{{ _site }}'
+  'guestinfo.cis.vmdir.password'            = '{{ root_pass_plain }}'
+  'guestinfo.cis.deployment.node.type'      = 'embedded'
+  #'guestinfo.cis.db.type'                   = 'embedded'
+  'guestinfo.cis.ceip_enabled'              = 'False'
+  domain                                    = '{{ domain_name }}'
+  searchpath                                = '{{ dns_search|join( " " ) }}'
+  vmname                                    = '{{ _hostname }}'
+
+[ script.create-vca ]
+  description = 'Install VCA'
+  script = """# installed by OVA during foundation deploy
+foundation.power_on()
+delay( seconds=240 )
+iputils.wait_for_port( target=structure.provisioning_ip, port=443 )
+"""
+
+[ script.destroy-vca ]
+  description = 'Uninstall VCA'
+  script = """# nothing to do, foundation cleanup should wipe/destroy the disks
+foundation.power_off()
+#eventually pxe boot to MBR wipper
+"""

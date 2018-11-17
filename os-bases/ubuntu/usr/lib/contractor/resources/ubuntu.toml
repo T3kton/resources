@@ -1,0 +1,127 @@
+[ structure.ubuntu-base ]
+  description = 'Base Ubuntu'
+  parents = [ 'linux-base' ]
+[ structure.ubunu-base.config_values ]
+  installer_pxe = 'ubuntu'
+  mirror_server = 'us.archive.ubuntu.com'
+  distro = 'ubuntu'
+  vcenter_guest_id = 'ubuntu64Guest'
+
+[ structure.ubuntu-precise-base ]
+  description = 'Base Ubuntu Precise Pangolin (12.04 LTS)'
+  parents = [ 'ubuntu-base' ]
+  config_values = { 'distro_version' = 'precise' }
+
+[ structure.ubuntu-trusty-base ]
+  description = 'Base Ubuntu Trusty Tahr (14.04 LTS)"'
+  parents = [ 'ubuntu-base' ]
+  config_values = { 'distro_version' = 'trusty' }
+
+[ structure.ubuntu-xenial-base ]
+  description = 'Base Ubuntu Xenial Xerus (16.04 LTS)'
+  parents = [ 'ubuntu-base' ]
+  config_values = { 'distro_version' = 'xenial', 'awsec2_image_id' = 'ami-efd0428f', 'docker_image' = 'xenial/ssh' }
+
+[ structure.ubuntu-bionic-base ]
+  description = 'Base Ubuntu Bionic Beaver (18.04 LTS)'
+  parents = [ 'ubuntu-base' ]
+  config_values = { 'distro_version' = 'bionic' }
+
+[ pxe.ubuntu ]
+  boot_script = """echo Ubuntu Installer
+kernel http://{{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us domain={{ domain }} hostname={{ hostname }}
+initrd http://{{ __pxe_location }}/ubuntu-installer/initrd
+boot
+"""
+  template = """
+d-i debian-installer/locale string en_US
+d-i console-setup/ask_detect boolean false
+d-i keyboard-configuration/xkb-keymap select us
+
+d-i netcfg/enable boolean true
+d-i netcfg/disable_autoconfig boolean true
+d-i netcfg/choose_interface select auto
+
+d-i netcfg/disable_dhcp boolean true
+
+d-i netcfg/get_ipaddress string {{ network.eth0.ip_address }}
+d-i netcfg/get_netmask string {{ network.eth0.netmask }}
+d-i netcfg/get_gateway string {{ network.eth0.gateway }}
+d-i netcfg/get_nameservers string {{ dns_servers.0 }}
+d-i netcfg/confirm_static boolean true
+
+d-i netcfg/get_hostname string {{ hostname }}
+d-i netcfg/get_domain string {{ domain_name }}
+
+d-i netcfg/hostname string {{ hostname }}
+
+### Mirror settings
+d-i mirror/country string manual
+d-i mirror/http/hostname string {{ mirror_server }}
+d-i mirror/http/directory string /ubuntu/
+d-i mirror/http/proxy string {{ http_proxy }}
+
+# Suite to install.
+d-i mirror/suite string {{ distro_version }}
+
+### Account setup
+d-i passwd/make-user boolean false
+d-i user-setup/allow-password-weak boolean true
+d-i passwd/root-login boolean true
+d-i passwd/root-password password 0skin3rd
+d-i passwd/root-password-again password 0skin3rd
+d-i user-setup/encrypt-home boolean false
+
+### Clock and time zone setup
+d-i clock-setup/utc boolean true
+d-i time/zone string UTC
+
+# Controls whether to use NTP to set the clock during the install
+d-i clock-setup/ntp boolean true
+d-i clock-setup/ntp-server string {{ ntp_servers.0 }}
+
+### Partitioning
+## Partitioning example
+d-i partman-auto/disk string /dev/sda
+d-i partman-auto/method string regular
+d-i partman-lvm/device_remove_lvm boolean true
+d-i partman-md/device_remove_md boolean true
+d-i partman-lvm/confirm boolean true
+d-i partman-lvm/confirm_nooverwrite boolean true
+d-i partman-auto/choose_recipe select atomic
+d-i partman-partitioning/confirm_write_new_label boolean true
+d-i partman/choose_partition select finish
+d-i partman/confirm boolean true
+d-i partman/confirm_nooverwrite boolean true
+
+d-i partman/mount_style select uuid
+
+### Base system installation
+#d-i base-installer/install-recommends boolean false
+#d-i base-installer/kernel/image string linux-generic
+
+### Package selection
+tasksel tasksel/first multiselect server
+
+d-i pkgsel/include string openssh-server curl {{ ubuntu-base:packages }}
+d-i pkgsel/upgrade select safe-upgrade
+d-i pkgsel/update-policy select none
+
+popularity-contest popularity-contest/participate boolean false
+
+### Boot loader installation
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/bootdev  string /dev/sda
+
+### Finishing up the installation
+d-i finish-install/reboot_in_progress note
+d-i debian-installer/exit/poweroff boolean true
+
+#d-i preseed/early_command string kill-all-dhcp; netcfg
+d-i preseed/early_command string /bin/killall.sh; /bin/netcfg
+
+{% if postinstall_script %}
+d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+"""
