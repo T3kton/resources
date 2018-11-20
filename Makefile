@@ -22,7 +22,7 @@ respkg-distros:
 	echo xenial
 
 respkg-requires:
-	echo respkg
+	echo respkg liblzma-dev
 
 respkg: ubuntu-pxe centos-pxe ipxe
 	cd os-bases && respkg -b ../contractor-ubuntu-base_0.0.respkg -n contractor-ubuntu-base -e 0.0 -c "Contractor - Ubuntu Base" -t load_ubuntu.sh -d ubuntu -s contractor-os-base

@@ -1,7 +1,7 @@
 [ structure.ubuntu-base ]
   description = 'Base Ubuntu'
   parents = [ 'linux-base' ]
-[ structure.ubunu-base.config_values ]
+[ structure.ubuntu-base.config_values ]
   installer_pxe = 'ubuntu'
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
