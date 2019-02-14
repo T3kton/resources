@@ -2,16 +2,95 @@
   description = 'Base CentOS'
   parents = [ 'linux-base' ]
 [ structure.centos-base.config_values ]
-  installer_pxe = 'centos'
   mirror_server = 'mirror.centos.org'
   distro = 'centos'
 
 [ structure.centos-6-base]
   description = 'Base CentOS 6'
   parents = [ 'centos-base' ]
+  installer_pxe = 'centos-6'
   config_values = { 'distro_version' = '6', vcenter_guest_id = 'rhel6_64Guest' }
 
 [ structure.centos-7-base]
   description = 'Base CentOS 7'
   parents = [ 'centos-base' ]
+  installer_pxe = 'centos-7'
   config_values = { 'distro_version' = '7', vcenter_guest_id = 'rhel7_64Guest' }
+
+[ pxe.centos-6 ]
+  boot_script = """echo CentOS 6 Installer
+kernel {{ __pxe_location }}/centos-installer/6vmlinuz inst.ks={{ __pxe_template_location }}
+initrd {{ __pxe_location }}/centos-installer/6initrd
+boot
+"""
+  template = """install
+url --url={{ mirror_server }}
+lang en_US.UTF-8
+keyboard us
+network --hostname={{ _fqdn }}
+network --nameservers={{ dns_servers.0 }}
+network --bootproto=static --onboot=on --ip={{ _interface_map.eth0.address_list.0.address }} --network={{ _interface_map.eth0.address_list.0.network }} --gateway={{ _interface_map.eth0.address_list.0.gateway }}
+rootpw --iscrypted {{ root_pass }}
+firewall --disabled
+selinux --permissive
+timezone UTC --ntpservers={{ ntp_servers.0 }}
+unsupported_hardware
+bootloader --location=mbr
+text
+skipx
+zerombr
+clearpart --all --initlabel
+autopart
+auth --enableshadow
+firstboot --disabled
+poweroff
+
+%packages --ignoremissing --excludedocs --instLangs=en_US.utf8
+@compat-libraries
+@core
+
+{% if postinstall_script %}
+%post
+chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+%end
+"""
+
+[ pxe.centos-7 ]
+  boot_script = """echo CentOS 7 Installer
+kernel {{ __pxe_location }}/centos-installer/7vmlinuz inst.ks={{ __pxe_template_location }}
+initrd {{ __pxe_location }}/centos-installer/7initrd
+boot
+"""
+  template = """install
+url --url={{ mirror_server }}
+lang en_US.UTF-8
+keyboard us
+network --hostname={{ _fqdn }}
+network --nameservers={{ dns_servers.0 }}
+network --bootproto=static --onboot=on --ip={{ _interface_map.eth0.address_list.0.address }} --network={{ _interface_map.eth0.address_list.0.network }} --gateway={{ _interface_map.eth0.address_list.0.gateway }}
+rootpw --iscrypted {{ root_pass }}
+firewall --disabled
+selinux --permissive
+timezone UTC --ntpservers={{ ntp_servers.0 }}
+unsupported_hardware
+bootloader --location=mbr
+text
+skipx
+zerombr
+clearpart --all --initlabel
+autopart
+auth --enableshadow
+firstboot --disabled
+poweroff
+
+%packages --ignoremissing --excludedocs --instLangs=en_US.utf8
+@compat-libraries
+@core
+
+{% if postinstall_script %}
+%post
+chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+%end
+"""

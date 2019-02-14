@@ -1,5 +1,11 @@
 build
 
+os-bases/ubuntu/var
+os-bases/centos/var
+
+centos7.iso
+centos6.iso
+
 centos-pxe
 ubuntu-pxe
 respkg
