@@ -51,11 +51,11 @@ respkg-requires:
 	echo respkg build-essential liblzma-dev genisoimage
 
 respkg: ubuntu-pxe centos-pxe build/ipxe/var/lib/tftpboot/ipxe
-	cd os-bases && respkg -b ../contractor-os-base_$(VERSION).respkg -n contractor-os-base -e $(VERSION) -c "Contractor - OS Base" -t load_os_base.sh -d os_base
-	cd os-bases && respkg -b ../contractor-ubuntu-base_$(VERSION).respkg -n contractor-ubuntu-base -e $(VERSION) -c "Contractor - Ubuntu Base" -t load_ubuntu.sh -d ubuntu -s contractor-os-base
-	cd os-bases && respkg -b ../contractor-centos-base_$(VERSION).respkg -n contractor-centos-base -e $(VERSION) -c "Contractor - CentOS Base" -t load_centos.sh -d centos -s contractor-os-base
-	cd vmware && respkg -b ../contractor-vmware-base_$(VERSION).respkg -n contractor-vmware-base -e $(VERSION) -c "Contractor - VMware Base" -t load_vmware.sh -d vmware -s contractor-os-base -s contractor-plugins-vcenter
-	cd build && respkg -b ../contractor-ipxe_$(VERSION).respkg -n contractor-ipxe -e $(VERSION) -c "Contractor - iPXE - Netboot loader" -y -d ipxe
+	cd os-bases && respkg -b ../contractor-os-base_$(VERSION).respkg     -n contractor-os-base     -e $(VERSION) -c "Contractor - OS Base"               -t load_os_base.sh -d os_base
+	cd os-bases && respkg -b ../contractor-ubuntu-base_$(VERSION).respkg -n contractor-ubuntu-base -e $(VERSION) -c "Contractor - Ubuntu Base"           -t load_ubuntu.sh  -d ubuntu -s contractor-os-base
+	cd os-bases && respkg -b ../contractor-centos-base_$(VERSION).respkg -n contractor-centos-base -e $(VERSION) -c "Contractor - CentOS Base"           -t load_centos.sh  -d centos -s contractor-os-base
+	cd vmware && respkg -b ../contractor-vmware-base_$(VERSION).respkg   -n contractor-vmware-base -e $(VERSION) -c "Contractor - VMware Base"           -t load_vmware.sh  -d vmware -s contractor-os-base -s contractor-plugins-vcenter
+	cd build && respkg -b ../contractor-ipxe_$(VERSION).respkg           -n contractor-ipxe        -e $(VERSION) -c "Contractor - iPXE - Netboot loader" -y -d ipxe
 	touch respkg
 
 respkg-file:
