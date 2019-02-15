@@ -1,12 +1,11 @@
-WARNING!!! this is not workable yet, hopfully soon.
-
-
 Resources
 =========
 
 
 Various required/usefull resources
 
+
+see http://t3kton.github.io
 
 iPXE
 ----
