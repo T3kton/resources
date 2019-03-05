@@ -6,9 +6,10 @@
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
   vcenter_guest_id = 'ubuntu64Guest'
+  virtualbox_guest_type = 'Ubuntu_64'
 
 [ structure.ubuntu-trusty-base ]
-  description = 'Base Ubuntu Trusty Tahr (14.04 LTS)"'
+  description = 'Base Ubuntu Trusty Tahr (14.04 LTS)'
   parents = [ 'ubuntu-base' ]
   config_values = { 'distro_version' = 'trusty' }
 
