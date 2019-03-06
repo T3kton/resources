@@ -6,9 +6,10 @@
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
   vcenter_guest_id = 'ubuntu64Guest'
+  virtualbox_guest_type = 'Ubuntu_64'
 
 [ structure.ubuntu-trusty-base ]
-  description = 'Base Ubuntu Trusty Tahr (14.04 LTS)"'
+  description = 'Base Ubuntu Trusty Tahr (14.04 LTS)'
   parents = [ 'ubuntu-base' ]
   config_values = { 'distro_version' = 'trusty' }
 
@@ -24,7 +25,7 @@
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
-kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us domain={{ domain }} hostname={{ hostname }}
+kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true domain={{ domain }} hostname={{ hostname }}
 initrd {{ __pxe_location }}/ubuntu-installer/initrd
 boot
 """
@@ -41,7 +42,12 @@ d-i netcfg/disable_dhcp boolean true
 
 d-i netcfg/get_ipaddress string {{ _interface_map.eth0.address_list.0.address }}
 d-i netcfg/get_netmask string {{ _interface_map.eth0.address_list.0.netmask }}
+{% if _interface_map.eth0.address_list.0.gateway %}
 d-i netcfg/get_gateway string {{ _interface_map.eth0.address_list.0.gateway }}
+{% else %}
+d-i netcfg/get_gateway string
+d-i netcfg/no_default_route boolean true
+{% endif %}
 d-i netcfg/get_nameservers string {{ dns_servers.0 }}
 d-i netcfg/confirm_static boolean true
 
@@ -54,7 +60,9 @@ d-i netcfg/hostname string {{ _hostname }}
 d-i mirror/country string manual
 d-i mirror/http/hostname string {{ mirror_server }}
 d-i mirror/http/directory string /ubuntu/
+{% if mirror_proxy %}
 d-i mirror/http/proxy string {{ mirror_proxy }}
+{% endif %}
 
 # Suite to install.
 d-i mirror/suite string {{ distro_version }}
@@ -63,7 +71,7 @@ d-i mirror/suite string {{ distro_version }}
 d-i passwd/make-user boolean false
 d-i user-setup/allow-password-weak boolean true
 d-i passwd/root-login boolean true
-d-i passwd/rroot-password-crypted password {{ root_pass }}
+d-i passwd/root-password-crypted password {{ root_pass }}
 d-i user-setup/encrypt-home boolean false
 
 ### Clock and time zone setup
@@ -97,7 +105,7 @@ d-i partman/mount_style select uuid
 ### Package selection
 tasksel tasksel/first multiselect server
 
-d-i pkgsel/include string openssh-server curl {{ ubuntu-base:packages }}
+d-i pkgsel/include string openssh-server curl {{ packages }}
 d-i pkgsel/upgrade select safe-upgrade
 d-i pkgsel/update-policy select none
 
