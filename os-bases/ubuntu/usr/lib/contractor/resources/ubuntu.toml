@@ -25,7 +25,7 @@
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
-kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us domain={{ domain }} hostname={{ hostname }}
+kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true domain={{ domain }} hostname={{ hostname }}
 initrd {{ __pxe_location }}/ubuntu-installer/initrd
 boot
 """
@@ -42,7 +42,12 @@ d-i netcfg/disable_dhcp boolean true
 
 d-i netcfg/get_ipaddress string {{ _interface_map.eth0.address_list.0.address }}
 d-i netcfg/get_netmask string {{ _interface_map.eth0.address_list.0.netmask }}
+{% if _interface_map.eth0.address_list.0.gateway %}
 d-i netcfg/get_gateway string {{ _interface_map.eth0.address_list.0.gateway }}
+{% else %}
+d-i netcfg/get_gateway string
+d-i netcfg/no_default_route boolean true
+{% endif %}
 d-i netcfg/get_nameservers string {{ dns_servers.0 }}
 d-i netcfg/confirm_static boolean true
 
@@ -64,7 +69,7 @@ d-i mirror/suite string {{ distro_version }}
 d-i passwd/make-user boolean false
 d-i user-setup/allow-password-weak boolean true
 d-i passwd/root-login boolean true
-d-i passwd/rroot-password-crypted password {{ root_pass }}
+d-i passwd/root-password-crypted password {{ root_pass }}
 d-i user-setup/encrypt-home boolean false
 
 ### Clock and time zone setup
@@ -98,7 +103,7 @@ d-i partman/mount_style select uuid
 ### Package selection
 tasksel tasksel/first multiselect server
 
-d-i pkgsel/include string openssh-server curl {{ ubuntu-base:packages }}
+d-i pkgsel/include string openssh-server curl {{ packages }}
 d-i pkgsel/upgrade select safe-upgrade
 d-i pkgsel/update-policy select none
 
