@@ -2,16 +2,100 @@
   description = 'Base CentOS'
   parents = [ 'linux-base' ]
 [ structure.centos-base.config_values ]
-  installer_pxe = 'centos'
   mirror_server = 'mirror.centos.org'
   distro = 'centos'
+  virtualbox_guest_type = 'RedHat_64'
 
-[ structure.centos-6-base]
+[ structure.centos-6-base ]
   description = 'Base CentOS 6'
   parents = [ 'centos-base' ]
-  config_values = { 'distro_version' = '6', vcenter_guest_id = 'rhel6_64Guest' }
+[ structure.centos-6-base.config_values ]
+  distro_version = '6'
+  installer_pxe = 'centos-6'
+  vcenter_guest_id = 'rhel6_64Guest'
 
 [ structure.centos-7-base]
   description = 'Base CentOS 7'
   parents = [ 'centos-base' ]
-  config_values = { 'distro_version' = '7', vcenter_guest_id = 'rhel7_64Guest' }
+[ structure.centos-7-base.config_values ]
+  memory_size = 2048  # centos 7 requires more minimum memory to install
+  distro_version = '7'
+  installer_pxe = 'centos-7'
+  vcenter_guest_id = 'rhel7_64Guest'
+
+[ pxe.centos-6 ]
+  boot_script = """echo CentOS 6 Installer
+kernel {{ __pxe_location }}/centos-installer/6vmlinuz ks={{ __pxe_template_location }}
+initrd {{ __pxe_location }}/centos-installer/6initrd
+boot
+"""
+  template = """install
+url --url=http://{{ mirror_server }}/centos/6/os/x86_64{% if mirror_proxy %} --proxy={{ mirror_proxy }}{% endif %}
+lang en_US.UTF-8
+keyboard us
+network --hostname={{ _fqdn }}
+network --nameserver={{ dns_servers.0 }}
+network --onboot=yes --device=eth0 --bootproto=static --ip={{ _interface_map.eth0.address_list.0.address }} --netmask={{ _interface_map.eth0.address_list.0.netmask }} --gateway={% if _interface_map.eth0.address_list.0.gateway %}{{ _interface_map.eth0.address_list.0.gateway }}{% else %}0.0.0.0{% endif %}
+rootpw --iscrypted {{ root_pass }}
+firewall --disabled
+selinux --permissive
+timezone --utc UTC
+unsupported_hardware
+bootloader --location=mbr
+text
+skipx
+zerombr
+clearpart --all --initlabel
+autopart
+auth --enableshadow
+firstboot --disabled
+poweroff
+
+%packages --ignoremissing --excludedocs --instLangs=en_US.utf8
+@compat-libraries
+@core
+
+{% if postinstall_script %}
+%post
+chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+%end
+"""
+
+[ pxe.centos-7 ]
+  boot_script = """echo CentOS 7 Installer
+kernel {{ __pxe_location }}/centos-installer/7vmlinuz inst.ks={{ __pxe_template_location }}
+initrd {{ __pxe_location }}/centos-installer/7initrd
+boot
+"""
+  template = """install
+url --url=http://{{ mirror_server }}/centos/7/os/x86_64{% if mirror_proxy %} --proxy={{ mirror_proxy }}{% endif %}
+lang en_US.UTF-8
+keyboard us
+network --hostname={{ _fqdn }}
+network --bootproto=static --device=enp0s3 --onboot=on --ip={{ _interface_map.eth0.address_list.0.address }} --netmask={{ _interface_map.eth0.address_list.0.netmask }}{% if _interface_map.eth0.address_list.0.gateway %} --gateway={{ _interface_map.eth0.address_list.0.gateway }}{% endif %} --nameserver={{ dns_servers.0 }}
+rootpw --iscrypted {{ root_pass }}
+firewall --disabled
+selinux --permissive
+timezone --utc UTC --ntpservers={{ ntp_servers.0 }}
+unsupported_hardware
+bootloader --location=mbr
+text
+skipx
+zerombr
+clearpart --all --initlabel
+autopart
+auth --enableshadow
+firstboot --disabled
+poweroff
+
+%packages --ignoremissing --excludedocs --instLangs=en_US.utf8
+@compat-libraries
+@core
+
+{% if postinstall_script %}
+%post
+chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+%end
+"""

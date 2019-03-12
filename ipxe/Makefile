@@ -45,10 +45,10 @@ source.touch:
 
 clean:
 	$(RM) -r bin
-	$(MAKE) -C src veryclean
+	$(MAKE) -C src veryclean || true
 
-full-clean: clean
+dist-clean: clean
 	$(RM) -r github_source
 	$(RM) source.touch
 
-.PHONY: all clean full-clean
+.PHONY: all clean dist-clean
