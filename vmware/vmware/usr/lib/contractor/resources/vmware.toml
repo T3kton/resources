@@ -52,8 +52,8 @@ foundation.power_off()
 
 [ pxe.esx ]
   boot_script = """echo ESX Installer
-kernel -n mboot.c32 {{ __pxe_location }}esxi/mboot.c32
-imgargs mboot.c32 -c {{ __pxe_location }}esxi/boot.cfg ks={{ __pxe_template_location }}
+kernel -n mboot.c32 {{ __pxe_location }}esx-installer/mboot.c32
+imgargs mboot.c32 -c {{ __pxe_location }}esx-installer/boot.cfg ks={{ __pxe_template_location }}
 boot mboot.c32
 """
   template = """{% set network = _interface_map[ _provisioning_interface ].address_list.0 %}

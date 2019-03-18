@@ -54,6 +54,8 @@ poweroff
 %packages --ignoremissing --excludedocs --instLangs=en_US.utf8
 @compat-libraries
 @core
+{{ packages.|join( "\n" ) }}
+%end
 
 {% if postinstall_script %}
 %post
@@ -92,6 +94,8 @@ poweroff
 %packages --ignoremissing --excludedocs --instLangs=en_US.utf8
 @compat-libraries
 @core
+{{ packages.|join( "\n" ) }}
+%end
 
 {% if postinstall_script %}
 %post

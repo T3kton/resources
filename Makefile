@@ -1,9 +1,9 @@
 VERSION := 0.1
 
+all:
+
 version:
 	echo $(VERSION)
-
-all:
 
 build/ipxe/var/lib/tftpboot/ipxe:
 	$(MAKE) -C ipxe
