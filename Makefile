@@ -2,8 +2,6 @@ VERSION := 0.3
 
 all:
 
-all:
-
 version:
 	echo $(VERSION)
 
