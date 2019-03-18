@@ -9,7 +9,7 @@ sflinks = [
           ]
 
 [ structure.vmware-esx-base ]
-  description = 'Base ESXi'
+  description = 'Base ESX'
   scripts = { 'create' = 'create-esx', 'destroy' = 'destroy-esx' }
 [ structure.vmware-esx-base.config_values ]
     root_pass = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
@@ -23,7 +23,7 @@ sflinks = [
     datastore_list = []
 
 [ script.create-esx ]
-  description = 'Install ESXi'
+  description = 'Install ESX'
   script = """# pxe boot and install
 dhcp.set_pxe( interface=structure.provisioning_interface, pxe='esx' )
 foundation.power_on()
@@ -44,7 +44,7 @@ end
 """
 
 [ script.destroy-esx ]
-  description = 'Uninstall ESXi'
+  description = 'Uninstall ESX'
   script = """# nothing to do, foundation cleanup should wipe/destroy the disks
 foundation.power_off()
 #eventually pxe boot to MBR wipper
