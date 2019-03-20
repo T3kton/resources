@@ -2,12 +2,13 @@ build
 
 os-bases/ubuntu/var
 os-bases/centos/var
+vmware/vmware/var
 
-centos7.iso
-centos6.iso
+*.iso
 
 centos-pxe
 ubuntu-pxe
+esx-pxe
 respkg
 
 *.respkg

@@ -60,9 +60,7 @@ d-i netcfg/hostname string {{ _hostname }}
 d-i mirror/country string manual
 d-i mirror/http/hostname string {{ mirror_server }}
 d-i mirror/http/directory string /ubuntu/
-{% if mirror_proxy %}
 d-i mirror/http/proxy string {{ mirror_proxy }}
-{% endif %}
 
 # Suite to install.
 d-i mirror/suite string {{ distro_version }}
@@ -105,7 +103,7 @@ d-i partman/mount_style select uuid
 ### Package selection
 tasksel tasksel/first multiselect server
 
-d-i pkgsel/include string openssh-server curl {{ packages }}
+d-i pkgsel/include string openssh-server curl {{ packages|join( ' ' ) }}
 d-i pkgsel/upgrade select safe-upgrade
 d-i pkgsel/update-policy select none
 
