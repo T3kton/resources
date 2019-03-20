@@ -27,15 +27,15 @@ centos-pxe:
 	touch centos-pxe
 
 esx-pxe:
-	mkdir -p vmware/vmware/var/www/static/pxe/esx-installer
-	if [ -f VMware-VMvisor-Installer-*.iso ]; then ./esxExtractISO VMware-VMvisor-Installer-*.iso vmware/vmware/var/www/static/pxe/esx-installer; fi
+	mkdir -p vmware/vmware/var/www/static/pxe/vmware/esx-installer
+	if [ -f VMware-VMvisor-Installer-*.iso ]; then ./esxExtractISO VMware-VMvisor-Installer-*.iso vmware/vmware/var/www/static/pxe/vmware/esx-installer; fi
 	touch esx-pxe
 
 vcenter-ova:
 	mkdir -p vmware/vmware/var/www/static/pxe/vmware
 	if [ -f VMware-VCSA-*.iso ]; then \
 	FILE_NAME=$$( xorriso -osirrox on -indev VMware-VCSA-*.iso -lsl vcsa | grep ova | awk '{print $$9}' | tr -d \' ); \
-	xorriso -osirrox on -indev VMware-VCSA-*.iso -extract_single vcsa/$$FILE_NAME vmware/vmware/var/www/static/pxe/vmware/vca.ova 2> /dev/null; \
+	xorriso -osirrox on -indev VMware-VCSA-*.iso -extract_single vcsa/$$FILE_NAME vmware/vmware/var/www/static/pxe/vmware/vcenter.ova 2> /dev/null; \
 	fi
 	touch vcenter-ova
 
@@ -76,4 +76,3 @@ respkg-file:
 	echo $(shell ls *.respkg)
 
 .PHONY:: respkg-distros respkg-requires respkg respkg-file
-

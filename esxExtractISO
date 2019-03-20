@@ -5,7 +5,7 @@ set -e
 #  should match __pxe_location
 if [ "x$URI_PATH" = "x" ]
 then
-  URI_PATH=http://static/pxe/esx-installer
+  URI_PATH=http://static/pxe/vmware/esx-installer
 fi
 
 if [ ! $( which xorriso ) ]

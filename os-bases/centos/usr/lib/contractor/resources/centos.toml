@@ -54,14 +54,14 @@ poweroff
 %packages --ignoremissing --excludedocs --instLangs=en_US.utf8
 @compat-libraries
 @core
-{{ packages.|join( "\n" ) }}
+{{ packages|join( "\n" ) }}
 %end
 
 {% if postinstall_script %}
 %post
 chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
-{% endif %}
 %end
+{% endif %}
 """
 
 [ pxe.centos-7 ]
@@ -94,12 +94,12 @@ poweroff
 %packages --ignoremissing --excludedocs --instLangs=en_US.utf8
 @compat-libraries
 @core
-{{ packages.|join( "\n" ) }}
+{{ packages|join( "\n" ) }}
 %end
 
 {% if postinstall_script %}
 %post
 chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
-{% endif %}
 %end
+{% endif %}
 """
