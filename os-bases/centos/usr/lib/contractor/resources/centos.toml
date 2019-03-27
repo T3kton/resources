@@ -12,7 +12,7 @@
 [ structure.centos-6-base.config_values ]
   distro_version = '6'
   installer_pxe = 'centos-6'
-  vcenter_guest_id = 'rhel6_64Guest'
+  vcenter_guest_id = 'centos6_64Guest'
 
 [ structure.centos-7-base]
   description = 'Base CentOS 7'
@@ -21,7 +21,7 @@
   memory_size = 2048  # centos 7 requires more minimum memory to install
   distro_version = '7'
   installer_pxe = 'centos-7'
-  vcenter_guest_id = 'rhel7_64Guest'
+  vcenter_guest_id = 'centos7_64Guest'
 
 [ pxe.centos-6 ]
   boot_script = """echo CentOS 6 Installer
