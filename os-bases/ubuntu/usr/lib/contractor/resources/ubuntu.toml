@@ -11,17 +11,24 @@
 [ structure.ubuntu-trusty-base ]
   description = 'Base Ubuntu Trusty Tahr (14.04 LTS)'
   parents = [ 'ubuntu-base' ]
-  config_values = { 'distro_version' = 'trusty' }
+[ structure.ubuntu-trusty-base.config_values ]
+  distro_version = 'trusty'
+  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '14.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-xenial-base ]
   description = 'Base Ubuntu Xenial Xerus (16.04 LTS)'
   parents = [ 'ubuntu-base' ]
-  config_values = { 'distro_version' = 'xenial', 'awsec2_image_id' = 'ami-efd0428f', 'docker_image' = 'xenial/ssh' }
+[ structure.ubuntu-xenial-base.config_values ]
+  distro_version = 'xenial'
+  awsec2_image_id = 'ami-efd0428f'
+  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '16.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-bionic-base ]
   description = 'Base Ubuntu Bionic Beaver (18.04 LTS)'
   parents = [ 'ubuntu-base' ]
-  config_values = { 'distro_version' = 'bionic' }
+[ structure.ubuntu-bionic-base.config_values ]
+  distro_version = 'bionic'
+  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
@@ -123,5 +130,9 @@ d-i preseed/early_command string /bin/killall.sh; /bin/netcfg
 
 {% if postinstall_script %}
 d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+
+{% if postinstall_command %}
+d-i preseed/late_command string chroot /target sh -c 'postinstall_command
 {% endif %}
 """

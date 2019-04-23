@@ -13,6 +13,7 @@
   distro_version = '6'
   installer_pxe = 'centos-6'
   vcenter_guest_id = 'centos6_64Guest'
+  azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '6.10', 'version' = 'latest' }
 
 [ structure.centos-7-base]
   description = 'Base CentOS 7'
@@ -22,6 +23,7 @@
   distro_version = '7'
   installer_pxe = 'centos-7'
   vcenter_guest_id = 'centos7_64Guest'
+  azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '7.6', 'version' = 'latest' }
 
 [ pxe.centos-6 ]
   boot_script = """echo CentOS 6 Installer
