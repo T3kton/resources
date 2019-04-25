@@ -4,6 +4,7 @@
 [ structure.centos-base.config_values ]
   mirror_server = 'mirror.centos.org'
   distro = 'centos'
+  '>VCenter:packages' = [ 'open-vm-tools' ]
   virtualbox_guest_type = 'RedHat_64'
 
 [ structure.centos-6-base ]

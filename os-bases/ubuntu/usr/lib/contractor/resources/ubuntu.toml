@@ -6,6 +6,7 @@
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
   vcenter_guest_id = 'ubuntu64Guest'
+  '>VCenter:packages' = [ 'open-vm-tools' ]
   virtualbox_guest_type = 'Ubuntu_64'
 
 [ structure.ubuntu-trusty-base ]
