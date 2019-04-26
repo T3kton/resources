@@ -16,7 +16,7 @@
   vcenter_guest_id = 'centos6_64Guest'
   azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '6.10', 'version' = 'latest' }
 
-[ structure.centos-7-base]
+[ structure.centos-7-base ]
   description = 'Base CentOS 7'
   parents = [ 'centos-base' ]
 [ structure.centos-7-base.config_values ]
@@ -60,9 +60,14 @@ poweroff
 {{ packages|join( "\n" ) }}
 %end
 
-{% if postinstall_script %}
+{% if ( postinstall_script ) or ( postinstall_commands )%}
 %post
-chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% if postinstall_script }
+chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+{% for cmd in postinstall_commands %}
+chroot /target sh -c '{{ cmd }}'
+{% endfor %}
 %end
 {% endif %}
 """
@@ -100,9 +105,14 @@ poweroff
 {{ packages|join( "\n" ) }}
 %end
 
-{% if postinstall_script %}
+{% if ( postinstall_script ) or ( postinstall_commands )%}
 %post
-chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% if postinstall_script }
+chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+{% endif %}
+{% for cmd in postinstall_commands %}
+chroot /target sh -c '{{ cmd }}'
+{% endfor %}
 %end
 {% endif %}
 """

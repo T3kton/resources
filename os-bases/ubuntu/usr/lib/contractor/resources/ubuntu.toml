@@ -33,7 +33,7 @@
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
-kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true domain={{ domain }} hostname={{ hostname }}
+kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true domain={{ _domain_name }} hostname={{ _hostname }}
 initrd {{ __pxe_location }}/ubuntu-installer/initrd
 boot
 """
@@ -60,7 +60,7 @@ d-i netcfg/get_nameservers string {{ dns_servers.0 }}
 d-i netcfg/confirm_static boolean true
 
 d-i netcfg/get_hostname string {{ _hostname }}
-d-i netcfg/get_domain string {{ domain_name }}
+d-i netcfg/get_domain string {{ _domain_name }}
 
 d-i netcfg/hostname string {{ _hostname }}
 
@@ -130,10 +130,10 @@ d-i debian-installer/exit/poweroff boolean true
 d-i preseed/early_command string /bin/killall.sh; /bin/netcfg
 
 {% if postinstall_script %}
-d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
 {% endif %}
 
-{% if postinstall_command %}
-d-i preseed/late_command string chroot /target sh -c 'postinstall_command
-{% endif %}
+{% for cmd in postinstall_commands %}
+d-i preseed/late_command string chroot /target sh -c '{{ cmd }}'
+{% endfor %}
 """

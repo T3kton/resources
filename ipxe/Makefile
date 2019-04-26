@@ -38,7 +38,7 @@ bin/undionly_ttys3.kpxe: script.ipxe source.touch
 	cp bin/undionly.kpxe bin/undionly_ttys3.kpxe
 
 source.touch:
-	git clone git://git.ipxe.org/ipxe.git github_source
+	git clone http://git.ipxe.org/ipxe.git github_source
 	$(RM) -f src/config/local/*
 	ln -sr config/* src/config/local
 	touch source.touch
