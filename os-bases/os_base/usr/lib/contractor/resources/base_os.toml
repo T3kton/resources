@@ -5,7 +5,7 @@
   swap_size = 512
   vcenter_guest_id = 'other26xLinux64Guest'
   virtualbox_guest_type = 'Linux26_64'
-  root_pass = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
+  root_password_hash = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
   'azure_admin_username:Azure' = 'CTRAdmin'
   'azure_admin_password:Azure' = 'CTRAdmin00'
 

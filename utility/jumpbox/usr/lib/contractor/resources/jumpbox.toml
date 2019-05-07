@@ -1,8 +1,12 @@
-[ structure. ]
+[ structure.linux-jump-box ]
   description = 'Linux Jump Box'
   parents = [ 'ubuntu-bionic-base' ]
-[ structure.ubuntu-base.config_values ]
-  '>packages' = [ 'xubuntu-desktop', 'xvfb', 'x11vnc' ]
-  '>after_commands' = [ 'echo "[SeatDefaults]\nxserver-command=/etc/X11/xinit/xserverrc" >> /etc/lightdm/lightdm.conf.d/50-xserver-command.conf',
-                        'echo "#!/bin/sh\nexec Xvfb :0 -screen 0 1366x768x16" > /etc/X11/xinit/xserverrc',
-                        'echo "start on login-session-start\nscript\nx11vnc -display :0 -many\nend script" > /etc/init/x11vnc.conf' ]
+[ structure.linux-jump-box.config_values ]
+  '>user_list' = [ { name = 'jbuser', group = 'jbgroup', password_hash = '$6$jbuserjbuser$S.RvuUr1xgPvZpus7zVWzPtjb5MiECT5jQI9DFLIF10HF3Vr2SyCjVy9hBdYuIoglBZQplBp9UYWCgfTSNghl/', sudo_list = [ 'ALL=(ALL) ALL' ] } ]
+  '>repo_list' = [ { distribution = 'stable', type = 'apt', uri = 'http://dl.google.com/linux/chrome/deb/', components = [ 'main' ], key_uri = 'https://dl-ssl.google.com/linux/linux_signing_key.pub', proxy = '{{ mirror_proxy|default( "local" ) }}' } ]
+  '>package_list' = [ 'xubuntu-desktop', 'remmina', 'icedtea-8-plugin', 'google-chrome-stable', 'xorgxrdp', 'xrdp' ]
+  '>postinstall_commands' = [ 'rm /etc/xrdp/rsakeys.ini /etc/xrdp/*.pem',
+                              '/usr/bin/xrdp-keygen xrdp auto',
+                              'chown xrdp.xrdp /etc/xrdp/rsakeys.ini',
+                              '/usr/bin/update-alternatives --set x-session-manager /usr/bin/startxfce4' ]
+

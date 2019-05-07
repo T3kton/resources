@@ -4,7 +4,7 @@
 [ structure.centos-base.config_values ]
   mirror_server = 'mirror.centos.org'
   distro = 'centos'
-  '>VCenter:packages' = [ 'open-vm-tools' ]
+  '>package_list:VCenter' = [ 'open-vm-tools' ]
   virtualbox_guest_type = 'RedHat_64'
 
 [ structure.centos-6-base ]
@@ -13,6 +13,7 @@
 [ structure.centos-6-base.config_values ]
   distro_version = '6'
   installer_pxe = 'centos-6'
+  # vcenter_guest_id = 'rhel6_64Guest' # if vcneter is older than 6.5
   vcenter_guest_id = 'centos6_64Guest'
   azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '6.10', 'version' = 'latest' }
 
@@ -23,6 +24,7 @@
   memory_size = 2048  # centos 7 requires more minimum memory to install
   distro_version = '7'
   installer_pxe = 'centos-7'
+  # vcenter_guest_id = 'rhel6_64Guest' # if vcneter is older than 6.5
   vcenter_guest_id = 'centos7_64Guest'
   azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '7.6', 'version' = 'latest' }
 
@@ -39,7 +41,7 @@ keyboard us
 network --hostname={{ _fqdn }}
 network --nameserver={{ dns_servers.0 }}
 network --onboot=yes --device=eth0 --bootproto=static --ip={{ _interface_map.eth0.address_list.0.address }} --netmask={{ _interface_map.eth0.address_list.0.netmask }} --gateway={% if _interface_map.eth0.address_list.0.gateway %}{{ _interface_map.eth0.address_list.0.gateway }}{% else %}0.0.0.0{% endif %}
-rootpw --iscrypted {{ root_pass }}
+rootpw --iscrypted {{ root_password_hash }}
 firewall --disabled
 selinux --permissive
 timezone --utc UTC
@@ -57,7 +59,7 @@ poweroff
 %packages --ignoremissing --excludedocs --instLangs=en_US.utf8
 @compat-libraries
 @core
-{{ packages|join( "\n" ) }}
+{{ package_list|join( "\n" ) }}
 %end
 
 {% if ( postinstall_script ) or ( postinstall_commands )%}
@@ -84,7 +86,7 @@ lang en_US.UTF-8
 keyboard us
 network --hostname={{ _fqdn }}
 network --bootproto=static --device=enp0s3 --onboot=on --ip={{ _interface_map.eth0.address_list.0.address }} --netmask={{ _interface_map.eth0.address_list.0.netmask }}{% if _interface_map.eth0.address_list.0.gateway %} --gateway={{ _interface_map.eth0.address_list.0.gateway }}{% endif %} --nameserver={{ dns_servers.0 }}
-rootpw --iscrypted {{ root_pass }}
+rootpw --iscrypted {{ root_password_hash }}
 firewall --disabled
 selinux --permissive
 timezone --utc UTC --ntpservers={{ ntp_servers.0 }}
@@ -102,7 +104,7 @@ poweroff
 %packages --ignoremissing --excludedocs --instLangs=en_US.utf8
 @compat-libraries
 @core
-{{ packages|join( "\n" ) }}
+{{ package_list|join( "\n" ) }}
 %end
 
 {% if ( postinstall_script ) or ( postinstall_commands )%}

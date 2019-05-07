@@ -6,7 +6,7 @@
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
   vcenter_guest_id = 'ubuntu64Guest'
-  '>VCenter:packages' = [ 'open-vm-tools' ]
+  '>package_list:VCenter' = [ 'open-vm-tools' ]
   virtualbox_guest_type = 'Ubuntu_64'
 
 [ structure.ubuntu-trusty-base ]
@@ -77,7 +77,7 @@ d-i mirror/suite string {{ distro_version }}
 d-i passwd/make-user boolean false
 d-i user-setup/allow-password-weak boolean true
 d-i passwd/root-login boolean true
-d-i passwd/root-password-crypted password {{ root_pass }}
+d-i passwd/root-password-crypted password {{ root_password_hash }}
 d-i user-setup/encrypt-home boolean false
 
 ### Clock and time zone setup
@@ -111,7 +111,7 @@ d-i partman/mount_style select uuid
 ### Package selection
 tasksel tasksel/first multiselect server
 
-d-i pkgsel/include string openssh-server curl {{ packages|join( ' ' ) }}
+d-i pkgsel/include string openssh-server curl {{ package_list|join( ' ' ) }}
 d-i pkgsel/upgrade select safe-upgrade
 d-i pkgsel/update-policy select none
 
