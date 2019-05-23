@@ -6,26 +6,34 @@
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
   vcenter_guest_id = 'ubuntu64Guest'
+  '>package_list:VCenter' = [ 'open-vm-tools' ]
   virtualbox_guest_type = 'Ubuntu_64'
 
 [ structure.ubuntu-trusty-base ]
   description = 'Base Ubuntu Trusty Tahr (14.04 LTS)'
   parents = [ 'ubuntu-base' ]
-  config_values = { 'distro_version' = 'trusty' }
+[ structure.ubuntu-trusty-base.config_values ]
+  distro_version = 'trusty'
+  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '14.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-xenial-base ]
   description = 'Base Ubuntu Xenial Xerus (16.04 LTS)'
   parents = [ 'ubuntu-base' ]
-  config_values = { 'distro_version' = 'xenial', 'awsec2_image_id' = 'ami-efd0428f', 'docker_image' = 'xenial/ssh' }
+[ structure.ubuntu-xenial-base.config_values ]
+  distro_version = 'xenial'
+  awsec2_image_id = 'ami-efd0428f'
+  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '16.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-bionic-base ]
   description = 'Base Ubuntu Bionic Beaver (18.04 LTS)'
   parents = [ 'ubuntu-base' ]
-  config_values = { 'distro_version' = 'bionic' }
+[ structure.ubuntu-bionic-base.config_values ]
+  distro_version = 'bionic'
+  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
-kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true domain={{ domain }} hostname={{ hostname }}
+kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true domain={{ _domain_name }} hostname={{ _hostname }}
 initrd {{ __pxe_location }}/ubuntu-installer/initrd
 boot
 """
@@ -52,7 +60,7 @@ d-i netcfg/get_nameservers string {{ dns_servers.0 }}
 d-i netcfg/confirm_static boolean true
 
 d-i netcfg/get_hostname string {{ _hostname }}
-d-i netcfg/get_domain string {{ domain_name }}
+d-i netcfg/get_domain string {{ _domain_name }}
 
 d-i netcfg/hostname string {{ _hostname }}
 
@@ -69,7 +77,7 @@ d-i mirror/suite string {{ distro_version }}
 d-i passwd/make-user boolean false
 d-i user-setup/allow-password-weak boolean true
 d-i passwd/root-login boolean true
-d-i passwd/root-password-crypted password {{ root_pass }}
+d-i passwd/root-password-crypted password {{ root_password_hash }}
 d-i user-setup/encrypt-home boolean false
 
 ### Clock and time zone setup
@@ -103,7 +111,7 @@ d-i partman/mount_style select uuid
 ### Package selection
 tasksel tasksel/first multiselect server
 
-d-i pkgsel/include string openssh-server curl {{ packages|join( ' ' ) }}
+d-i pkgsel/include string openssh-server curl {{ package_list|join( ' ' ) }}
 d-i pkgsel/upgrade select safe-upgrade
 d-i pkgsel/update-policy select none
 
@@ -122,6 +130,10 @@ d-i debian-installer/exit/poweroff boolean true
 d-i preseed/early_command string /bin/killall.sh; /bin/netcfg
 
 {% if postinstall_script %}
-d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ __pxe_location }}/scripts/{{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
 {% endif %}
+
+{% for cmd in postinstall_commands %}
+d-i preseed/late_command string chroot /target sh -c '{{ cmd }}'
+{% endfor %}
 """

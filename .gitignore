@@ -3,9 +3,11 @@ build
 os-bases/ubuntu/var
 os-bases/centos/var
 vmware/vmware/var
+github_source/
 
 *.iso
 
+vcenter-ova
 centos-pxe
 ubuntu-pxe
 esx-pxe

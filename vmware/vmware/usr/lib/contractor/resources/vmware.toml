@@ -10,7 +10,7 @@ sflinks = [
   description = 'Base ESX'
   scripts = { 'create' = 'create-esx', 'destroy' = 'destroy-esx' }
 [ structure.vmware-esx-base.config_values ]
-    root_pass = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
+    root_password_hash = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
     memory_size = 4096
     cpu_count = 2
     disk_provisioning = 'thin'
@@ -57,7 +57,7 @@ boot mboot.c32
   template = """{% set network = _interface_map[ _provisioning_interface ].address_list.0 %}
 accepteula
 
-rootpw --iscrypted {{ root_pass }}
+rootpw --iscrypted {{ root_password_hash }}
 
 clearpart --alldrives --overwritevmfs
 
@@ -74,7 +74,7 @@ network --bootproto=static --ip={{ network.address }} --netmask={{ network.netma
   description = 'Base VCA'
   scripts = { 'create' = 'create-vca', 'destroy' = 'destroy-vca' }
 [ structure.vmware-vca-base.config_values ]
-  root_pass_plain = 'VMware1!'
+  root_password_plain = 'VMware1!'
   ova = '{{ __pxe_location }}vmware/vcenter.ova'
   cpu_count = 2
   memory_size = 2048
@@ -90,11 +90,11 @@ network --bootproto=static --ip={{ network.address }} --netmask={{ network.netma
   'guestinfo.cis.appliance.net.gateway'     = '{{ _foundation_interface_list.0.address_list.0.gateway }}'
   'guestinfo.cis.appliance.net.dns.servers' = '{{ dns_servers|join( "," ) }}'
   'guestinfo.cis.appliance.ntp.servers'     = '{{ ntp_servers|join( "," ) }}'
-  'guestinfo.cis.appliance.root.passwd'     = '{{ root_pass_plain }}'
+  'guestinfo.cis.appliance.root.passwd'     = '{{ root_password_plain }}'
   'guestinfo.cis.appliance.ssh.enabled'     = 'True'
   'guestinfo.cis.vmdir.domain-name'         = '{{ domain_name }}'
   'guestinfo.cis.vmdir.site-name'           = '{{ _site }}'
-  'guestinfo.cis.vmdir.password'            = '{{ root_pass_plain }}'
+  'guestinfo.cis.vmdir.password'            = '{{ root_password_plain }}'
   'guestinfo.cis.deployment.node.type'      = 'embedded'
   'guestinfo.cis.ceip_enabled'              = 'False'
   domain                                    = '{{ domain_name }}'
