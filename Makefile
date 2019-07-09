@@ -18,12 +18,10 @@ ubuntu-pxe:
 
 centos-pxe:
 	mkdir -p os-bases/centos/var/www/static/pxe/centos-installer
-	[ -f centos7.iso ] || wget http://mirrors.xmission.com/centos/7.6.1810/isos/x86_64/CentOS-7-x86_64-Minimal-1810.iso -O centos7.iso
-	[ -f centos6.iso ] || wget http://mirrors.xmission.com/centos/6.10/isos/x86_64/CentOS-6.10-x86_64-minimal.iso -O centos6.iso
-	xorriso -osirrox on -indev centos6.iso -extract_single images/pxeboot/initrd.img os-bases/centos/var/www/static/pxe/centos-installer/6initrd
-	xorriso -osirrox on -indev centos6.iso -extract_single images/pxeboot/vmlinuz os-bases/centos/var/www/static/pxe/centos-installer/6vmlinuz
-	xorriso -osirrox on -indev centos7.iso -extract_single images/pxeboot/initrd.img os-bases/centos/var/www/static/pxe/centos-installer/7initrd
-	xorriso -osirrox on -indev centos7.iso -extract_single images/pxeboot/vmlinuz os-bases/centos/var/www/static/pxe/centos-installer/7vmlinuz
+	[ -f os-bases/centos/var/www/static/pxe/centos-installer/6.initrd ] || wget http://mirror.centos.org/centos/6/os/x86_64/images/pxeboot/initrd.img -O os-bases/centos/var/www/static/pxe/centos-installer/6.initrd
+	[ -f os-bases/centos/var/www/static/pxe/centos-installer/6.vmlinuz ] || wget http://mirror.centos.org/centos/6/os/x86_64/images/pxeboot/vmlinuz -O os-bases/centos/var/www/static/pxe/centos-installer/6.vmlinuz
+	[ -f os-bases/centos/var/www/static/pxe/centos-installer/7.initrd ] || wget http://mirror.centos.org/centos/7/os/x86_64/images/pxeboot/initrd.img -O os-bases/centos/var/www/static/pxe/centos-installer/7.initrd
+	[ -f os-bases/centos/var/www/static/pxe/centos-installer/7.vmlinuz ] || wget http://mirror.centos.org/centos/7/os/x86_64/images/pxeboot/vmlinuz -O os-bases/centos/var/www/static/pxe/centos-installer/7.vmlinuz
 	touch centos-pxe
 
 esx-pxe:
@@ -54,7 +52,6 @@ dist-clean: clean
 	$(RM) -r os-bases/ubuntu/var
 	$(RM) -r os-bases/centos/var
 	$(RM) -r vmware/vmware/var
-	$(RM) centos6.iso centos7.iso
 
 .PHONY:: all version clean dist-clean
 

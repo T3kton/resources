@@ -30,8 +30,8 @@
 
 [ pxe.centos-6 ]
   boot_script = """echo CentOS 6 Installer
-kernel {{ __pxe_location }}/centos-installer/6vmlinuz ks={{ __pxe_template_location }}
-initrd {{ __pxe_location }}/centos-installer/6initrd
+kernel {{ __pxe_location }}/centos-installer/6.vmlinuz ks={{ __pxe_template_location }}
+initrd {{ __pxe_location }}/centos-installer/6.initrd
 boot
 """
   template = """install
@@ -76,8 +76,8 @@ chroot /target sh -c '{{ cmd }}'
 
 [ pxe.centos-7 ]
   boot_script = """echo CentOS 7 Installer
-kernel {{ __pxe_location }}/centos-installer/7vmlinuz inst.ks={{ __pxe_template_location }}
-initrd {{ __pxe_location }}/centos-installer/7initrd
+kernel {{ __pxe_location }}/centos-installer/7.vmlinuz inst.ks={{ __pxe_template_location }}
+initrd {{ __pxe_location }}/centos-installer/7.initrd
 boot
 """
   template = """install
