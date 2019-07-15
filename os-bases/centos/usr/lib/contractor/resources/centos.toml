@@ -60,9 +60,9 @@ poweroff
 {{ package_list|join( "\n" ) }}
 %end
 
-{% if ( postinstall_script ) or ( postinstall_commands )%}
+{% if ( postinstall_script ) or ( postinstall_commands ) %}
 %post
-{% if postinstall_script }
+{% if postinstall_script %}
 chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
 {% endif %}
 {% for cmd in postinstall_commands %}
@@ -105,9 +105,9 @@ poweroff
 {{ package_list|join( "\n" ) }}
 %end
 
-{% if ( postinstall_script ) or ( postinstall_commands )%}
+{% if ( postinstall_script ) or ( postinstall_commands ) %}
 %post
-{% if postinstall_script }
+{% if postinstall_script %}
 chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
 {% endif %}
 {% for cmd in postinstall_commands %}
