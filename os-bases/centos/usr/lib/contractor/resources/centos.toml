@@ -13,7 +13,6 @@
 [ structure.centos-6-base.config_values ]
   distro_version = '6'
   installer_pxe = 'centos-6'
-  # vcenter_guest_id = 'rhel6_64Guest' # if vcneter is older than 6.5
   vcenter_guest_id = 'centos6_64Guest'
   azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '6.10', 'version' = 'latest' }
 
@@ -24,7 +23,6 @@
   memory_size = 2048  # centos 7 requires more minimum memory to install
   distro_version = '7'
   installer_pxe = 'centos-7'
-  # vcenter_guest_id = 'rhel6_64Guest' # if vcneter is older than 6.5
   vcenter_guest_id = 'centos7_64Guest'
   azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '7.6', 'version' = 'latest' }
 

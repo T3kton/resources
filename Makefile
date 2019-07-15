@@ -55,6 +55,14 @@ dist-clean: clean
 
 .PHONY:: all version clean dist-clean
 
+oldvcenter:
+	patch -p0 < vcenter-pre67.patch
+
+newvcenter:
+	patch -p0 -R < vcenter-pre67.patch
+
+.PHONY:: oldvcenter newvcenter
+
 respkg-distros:
 	echo xenial
 
@@ -68,7 +76,6 @@ respkg: ubuntu-pxe centos-pxe esx-pxe vcenter-ova build/ipxe/var/lib/tftpboot/ip
 	cd utility && respkg -b ../contractor-jumpbox_$(VERSION).respkg      -n contractor-jumpbox     -e $(VERSION) -c "Contractor - Jumpbox"               -t load_jumpbox.sh -d jumpbox -s ubuntu
 	cd vmware && respkg -b ../contractor-vmware-base_$(VERSION).respkg   -n contractor-vmware-base -e $(VERSION) -c "Contractor - VMware Base"           -t load_vmware.sh  -d vmware -s contractor-os-base -s contractor-plugins-vcenter
 	cd build && respkg -b ../contractor-ipxe_$(VERSION).respkg           -n contractor-ipxe        -e $(VERSION) -c "Contractor - iPXE - Netboot loader" -y -d ipxe
-	touch respkg
 
 respkg-file:
 	echo $(shell ls *.respkg)
