@@ -46,7 +46,7 @@ else
 
 if check_port then
   begin( description='Verify Running' )
-    iputils.wait_for_port( target=structure.provisioning_ip, port=check_port )
+    iputils.wait_for_port( target=structure.primary_ip, port=check_port )
   end"""
 
 [ script.linux-destroy ]

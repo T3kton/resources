@@ -31,7 +31,7 @@ foundation.wait_for_poweroff()
 dhcp.set_pxe( interface=structure.provisioning_interface, pxe='normal-boot' )
 foundation.power_on()
 
-iputils.wait_for_port( target=structure.provisioning_ip, port=80 )
+iputils.wait_for_port( target=structure.primary_ip, port=80 )
 
 datastore_list = config.datastore_list
 while len( array=datastore_list ) do
@@ -54,8 +54,12 @@ kernel -n mboot.c32 {{ __pxe_location }}vmware/esx-installer/mboot.c32
 imgargs mboot.c32 -c {{ __pxe_location }}vmware/esx-installer/boot.cfg ks={{ __pxe_template_location }}
 boot mboot.c32
 """
-  template = """{% set network = _interface_map[ _provisioning_interface ].address_list.0 %}
+  template = """{% set network = _primary_address %}
 accepteula
+
+{% if esx_license_key %}
+serialnum --esx={{ esx_license_key }}
+{% endif %}
 
 rootpw --iscrypted {{ root_password_hash }}
 
@@ -64,7 +68,7 @@ clearpart --alldrives --overwritevmfs
 install --firstdisk --overwritevmfs
 #install --firstdisk=usb --overwritevmfs
 
-network --bootproto=static --ip={{ network.address }} --netmask={{ network.netmask }}{% if network.gateway %} --gateway={{ network.gateway }}{% endif %} --nameserver={{ dns_servers.0 }} --hostname={{ _hostname }}
+network --bootproto=static --device={{ _primary_interface_mac }} --ip={{ network.address }} --netmask={{ network.netmask }}{% if network.gateway %} --gateway={{ network.gateway }}{% endif %} --nameserver={{ dns_servers.0 }} --hostname={{ _hostname }}
 
 %post --interpreter=busybox
 /sbin/poweroff
@@ -106,7 +110,7 @@ network --bootproto=static --ip={{ network.address }} --netmask={{ network.netma
   script = """# installed by OVA during foundation deploy
 foundation.power_on()
 delay( seconds=240 )
-iputils.wait_for_port( target=structure.provisioning_ip, port=443 )
+iputils.wait_for_port( target=structure.primary_ip, port=443 )
 """
 
 [ script.destroy-vca ]
