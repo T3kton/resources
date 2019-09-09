@@ -18,6 +18,7 @@ sflinks = [
     vcenter_guest_id = 'vmkernel6Guest'
     vcenter_virtual_exec_usage = 'on'
     vcenter_virtual_mmu_usage = 'on'
+    vcenter_virtual_vhv = true
     datastore_list = []
 
 [ script.create-esx ]
@@ -66,11 +67,63 @@ rootpw --iscrypted {{ root_password_hash }}
 clearpart --alldrives --overwritevmfs
 
 install --firstdisk --overwritevmfs
-#install --firstdisk=usb --overwritevmfs
 
-network --bootproto=static --device={{ _primary_interface_mac }} --ip={{ network.address }} --netmask={{ network.netmask }}{% if network.gateway %} --gateway={{ network.gateway }}{% endif %} --nameserver={{ dns_servers.0 }} --hostname={{ _hostname }}
+#network --bootproto=dhcp
+#network --bootproto=static --device={{ _primary_interface_mac }} --ip={{ network.address }} --netmask={{ network.netmask }}{% if network.gateway %} --gateway={{ network.gateway }}{% endif %} --nameserver={{ dns_servers.0 }} --hostname={{ _hostname }}
 
-%post --interpreter=busybox
+%firstboot --interpreter=busybox
+
+sleep 10
+
+echo 'Remove Default vSwitch...'
+esxcli network ip interface remove --portgroup-name='Management Network'
+esxcli network vswitch standard portgroup remove --vswitch-name=vSwitch0 --portgroup-name='Management Network'
+esxcli network vswitch standard portgroup remove --vswitch-name=vSwitch0 --portgroup-name='VM Network'
+esxcli network vswitch standard remove --vswitch-name=vSwitch0
+
+echo 'Setting hostname...'
+esxcli system hostname set --domain {{ _domain_name }} --host {{ _hostname }}
+
+{% set counter = [ 0 ] %}
+{% for do_primary in ( True, False ) %}
+{% for interface in _interface_map.values() %}
+{% set is_primary = ( interface.name == _primary_interface ) %}
+{% if do_primary == is_primary %}
+{% set address = interface.address_list.0 %}
+{% set vswitch = 'vSwitch' + counter.0|string %}
+{% set vmk = 'vmk' + counter.0|string %}
+echo 'Configure Interface {{ interface.name }}...'
+esxcli network vswitch standard add --vswitch-name={{ vswitch }}
+esxcli network vswitch standard uplink add --vswitch-name={{ vswitch }} --uplink-name={{ interface.name }}
+esxcli network vswitch standard portgroup add --vswitch-name={{ vswitch }} --portgroup-name='{{ interface.network }}'
+esxcli network vswitch standard portgroup add --vswitch-name={{ vswitch }} --portgroup-name='Managment {{ interface.network }}'
+esxcli network ip interface add --interface-name={{ vmk }} --portgroup-name='Managment {{ interface.network }}'
+esxcli network ip interface ipv4 set --interface-name={{ vmk }} --type=static --ipv4={{ address.address }} --netmask={{ address.netmask }}
+esxcli network ip interface tag add --interface-name={{ vmk }} --tagname=Management
+{% if address.gateway %}
+esxcli network ip route ipv4 add --network=default --gateway={{ address.gateway }}
+{% endif %}
+{% set _ = counter.append( counter.pop() + 1 ) %}
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+echo 'Set DNS...'
+{% for server in dns_servers %}
+esxcli network ip dns server add --server={{ server }}
+{% endfor %}
+
+echo 'Enable SSH...'
+vim-cmd hostsvc/enable_ssh
+
+echo 'Disable CEIP...'
+esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
+
+echo 'Done.'
+esxcli system shutdown reboot -d 5 -r 'Applying Network Configuration'
+
+%post --interpreter=busybox --ignorefailure=false
+echo 'Power off...'
 /sbin/poweroff
 """
 
