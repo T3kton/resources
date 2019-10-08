@@ -120,7 +120,7 @@ echo 'Disable CEIP...'
 esxcli system settings advanced set -o /UserVars/HostClientCEIPOptIn -i 2
 
 echo 'Done.'
-esxcli system shutdown reboot -d 5 -r 'Applying Network Configuration'
+/sbin/reboot
 
 %post --interpreter=busybox --ignorefailure=false
 echo 'Power off...'
@@ -162,7 +162,11 @@ echo 'Power off...'
   description = 'Install VCA'
   script = """# installed by OVA during foundation deploy
 foundation.power_on()
-delay( seconds=240 )
+delay( seconds=300 )
+iputils.wait_for_port( target=structure.primary_ip, port=443 )
+
+# wait a few seconds for it to reboot, and make sure the port openes again, just incase we got an open port before it rebooted
+delay( seconds=30 )
 iputils.wait_for_port( target=structure.primary_ip, port=443 )
 """
 
