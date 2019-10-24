@@ -1,4 +1,4 @@
-VERSION := 0.4
+VERSION := 0.5
 
 all:
 
@@ -64,7 +64,7 @@ newvcenter:
 .PHONY:: oldvcenter newvcenter
 
 respkg-distros:
-	echo xenial
+	echo ubuntu-xenial
 
 respkg-requires:
 	echo respkg build-essential liblzma-dev xorriso
