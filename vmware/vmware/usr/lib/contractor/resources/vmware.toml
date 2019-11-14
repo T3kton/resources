@@ -33,6 +33,13 @@ dhcp.set_pxe( interface=structure.provisioning_interface, pxe='normal-boot' )
 foundation.power_on()
 
 iputils.wait_for_port( target=structure.primary_ip, port=80 )
+# after the first boot, the network may come up while the script runs
+delay( seconds=120 )
+# now it is rebooting, so wait for it to come up again
+iputils.wait_for_port( target=structure.primary_ip, port=80 )
+
+# a little margin before we start doing anything, hopfully the quickstats get updated in this time
+delay( seconds=30 )
 
 datastore_list = config.datastore_list
 while len( array=datastore_list ) do
@@ -68,7 +75,7 @@ clearpart --alldrives --overwritevmfs
 
 install --firstdisk --overwritevmfs
 
-#network --bootproto=dhcp
+network --bootproto=dhcp
 #network --bootproto=static --device={{ _primary_interface_mac }} --ip={{ network.address }} --netmask={{ network.netmask }}{% if network.gateway %} --gateway={{ network.gateway }}{% endif %} --nameserver={{ dns_servers.0 }} --hostname={{ _hostname }}
 
 %firstboot --interpreter=busybox
