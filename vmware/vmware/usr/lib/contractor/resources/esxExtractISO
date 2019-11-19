@@ -5,7 +5,9 @@ set -e
 #  should match __pxe_location
 if [ "x$URI_PATH" = "x" ]
 then
-  URI_PATH=http://static/pxe/vmware/esx-installer
+  URI_PATH="http://static/pxe/vmware/esx-installer"
+else
+  URI_PATH="${URI_PATH}/pxe/vmware/esx-installer"
 fi
 
 if [ ! $( which xorriso ) ]
@@ -22,12 +24,12 @@ fi
 
 if [ "x$2" = "x" ]
 then
-  echo "Specify a target directory"
+  echo "Specify root directory of the static resource server, where __pxe_location is hosted from"
   exit 1
 fi
 
 ISO_FILE="$1"
-TARGET_DIR="$2"
+TARGET_DIR="$2/pxe/vmware/esx-installer/"
 
 if [ ! -r "$ISO_FILE" ] || [ $( file -L -b --mime-type "$ISO_FILE" ) != "application/x-iso9660-image" ]
 then
