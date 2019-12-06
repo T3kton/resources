@@ -5,31 +5,34 @@
   installer_pxe = 'ubuntu'
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
-  vcenter_guest_id = 'ubuntu64Guest'
+  'vcenter_guest_id:VCenter' = 'ubuntu64Guest'
   '>package_list:VCenter' = [ 'open-vm-tools' ]
-  virtualbox_guest_type = 'Ubuntu_64'
+  'virtualbox_guest_type:VirtualBox' = 'Ubuntu_64'
+  '<postinstall_command_list' = [ 'sed "s/#PermitRootLogin.*/PermitRootLogin yes/" -i /etc/ssh/sshd_config' ]
 
 [ structure.ubuntu-trusty-base ]
   description = 'Base Ubuntu Trusty Tahr (14.04 LTS)'
   parents = [ 'ubuntu-base' ]
 [ structure.ubuntu-trusty-base.config_values ]
   distro_version = 'trusty'
-  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '14.04-LTS', 'version' = 'latest' }
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '14.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-xenial-base ]
   description = 'Base Ubuntu Xenial Xerus (16.04 LTS)'
   parents = [ 'ubuntu-base' ]
 [ structure.ubuntu-xenial-base.config_values ]
   distro_version = 'xenial'
-  awsec2_image_id = 'ami-efd0428f'
-  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '16.04-LTS', 'version' = 'latest' }
+  'awsec2_image_id:AWS' = 'ami-efd0428f'
+  'docker_image:Docker' = 'ubuntu:xenial'
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '16.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-bionic-base ]
   description = 'Base Ubuntu Bionic Beaver (18.04 LTS)'
   parents = [ 'ubuntu-base' ]
 [ structure.ubuntu-bionic-base.config_values ]
   distro_version = 'bionic'
-  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
+  'docker_image:Docker' = 'ubuntu:bionic'
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
@@ -127,13 +130,11 @@ d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean true
 
 #d-i preseed/early_command string kill-all-dhcp; netcfg
-d-i preseed/early_command string /bin/killall.sh; /bin/netcfg
+d-i preseed/early_command string /bin/killall.sh | true; /bin/netcfg
 
-{% if postinstall_script %}
-d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
-{% endif %}
-
-{% for cmd in postinstall_commands %}
-d-i preseed/late_command string chroot /target sh -c '{{ cmd }}'
+{% if postinstall_script or postinstall_command_list %}
+d-i preseed/late_command string \
+{% if postinstall_script %}    in-target /usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'; \{% endif %}
+{% for cmd in postinstall_command_list %} in-target {{ cmd }}; \
 {% endfor %}
 """
