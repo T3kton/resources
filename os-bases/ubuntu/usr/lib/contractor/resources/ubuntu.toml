@@ -45,6 +45,7 @@ d-i debian-installer/locale string en_US
 d-i console-setup/ask_detect boolean false
 d-i keyboard-configuration/xkb-keymap select us
 
+### Network settings
 d-i netcfg/enable boolean true
 d-i netcfg/disable_autoconfig boolean true
 d-i netcfg/choose_interface select auto
@@ -114,7 +115,7 @@ d-i partman/mount_style select uuid
 ### Package selection
 tasksel tasksel/first multiselect server
 
-d-i pkgsel/include string openssh-server curl {{ package_list|join( ' ' ) }}
+d-i pkgsel/include string openssh-server {{ package_list|join( ' ' ) }}
 d-i pkgsel/upgrade select safe-upgrade
 d-i pkgsel/update-policy select none
 
@@ -129,12 +130,16 @@ d-i grub-installer/bootdev  string /dev/sda
 d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean true
 
-#d-i preseed/early_command string kill-all-dhcp; netcfg
-d-i preseed/early_command string /bin/killall.sh | true; /bin/netcfg
+### Needed to get the network config to save
+d-i preseed/early_command string kill-all-dhcp; netcfg
 
+### Post install 
 {% if postinstall_script or postinstall_command_list %}
-d-i preseed/late_command string \
-{% if postinstall_script %}    in-target /usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'; \{% endif %}
-{% for cmd in postinstall_command_list %} in-target {{ cmd }}; \
-{% endfor %}
+d-i preseed/late_command string echo -e '#!/bin/sh -xe\\necho "Start post install..."\\n\\
+{% if postinstall_script %} wget -vO /target/root/postinstall_script {{ postinstall_script }}\\n\\
+chmod +x /target/root/postinstall_script\\n\\
+chroot /target /root/postinstall_script > /target/root/postinstall_script.log 2>&1\\n\\
+{% endif %}{% for cmd in postinstall_command_list %}chroot /target {{ cmd }}\\n\\
+{% endfor %}echo "Post install complete"\\n' > /target/root/post_script ; chmod +x /target/root/post_script ; ./target/root/post_script > /target/root/post_script.log 2>&1
+{% endif %}
 """
