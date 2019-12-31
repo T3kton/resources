@@ -5,31 +5,34 @@
   installer_pxe = 'ubuntu'
   mirror_server = 'us.archive.ubuntu.com'
   distro = 'ubuntu'
-  vcenter_guest_id = 'ubuntu64Guest'
+  'vcenter_guest_id:VCenter' = 'ubuntu64Guest'
   '>package_list:VCenter' = [ 'open-vm-tools' ]
-  virtualbox_guest_type = 'Ubuntu_64'
+  'virtualbox_guest_type:VirtualBox' = 'Ubuntu_64'
+  '<postinstall_command_list' = [ 'sed "s/#PermitRootLogin.*/PermitRootLogin yes/" -i /etc/ssh/sshd_config' ]
 
 [ structure.ubuntu-trusty-base ]
   description = 'Base Ubuntu Trusty Tahr (14.04 LTS)'
   parents = [ 'ubuntu-base' ]
 [ structure.ubuntu-trusty-base.config_values ]
   distro_version = 'trusty'
-  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '14.04-LTS', 'version' = 'latest' }
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '14.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-xenial-base ]
   description = 'Base Ubuntu Xenial Xerus (16.04 LTS)'
   parents = [ 'ubuntu-base' ]
 [ structure.ubuntu-xenial-base.config_values ]
   distro_version = 'xenial'
-  awsec2_image_id = 'ami-efd0428f'
-  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '16.04-LTS', 'version' = 'latest' }
+  'awsec2_image_id:AWS' = 'ami-efd0428f'
+  'docker_image:Docker' = 'ubuntu:xenial'
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '16.04-LTS', 'version' = 'latest' }
 
 [ structure.ubuntu-bionic-base ]
   description = 'Base Ubuntu Bionic Beaver (18.04 LTS)'
   parents = [ 'ubuntu-base' ]
 [ structure.ubuntu-bionic-base.config_values ]
   distro_version = 'bionic'
-  azure_image = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
+  'docker_image:Docker' = 'ubuntu:bionic'
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
 
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
@@ -42,6 +45,7 @@ d-i debian-installer/locale string en_US
 d-i console-setup/ask_detect boolean false
 d-i keyboard-configuration/xkb-keymap select us
 
+### Network settings
 d-i netcfg/enable boolean true
 d-i netcfg/disable_autoconfig boolean true
 d-i netcfg/choose_interface select auto
@@ -111,7 +115,7 @@ d-i partman/mount_style select uuid
 ### Package selection
 tasksel tasksel/first multiselect server
 
-d-i pkgsel/include string openssh-server curl {{ package_list|join( ' ' ) }}
+d-i pkgsel/include string openssh-server {{ package_list|join( ' ' ) }}
 d-i pkgsel/upgrade select safe-upgrade
 d-i pkgsel/update-policy select none
 
@@ -126,14 +130,16 @@ d-i grub-installer/bootdev  string /dev/sda
 d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean true
 
-#d-i preseed/early_command string kill-all-dhcp; netcfg
-d-i preseed/early_command string /bin/killall.sh; /bin/netcfg
+### Needed to get the network config to save
+d-i preseed/early_command string kill-all-dhcp; netcfg
 
-{% if postinstall_script %}
-d-i preseed/late_command string chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
+### Post install 
+{% if postinstall_script or postinstall_command_list %}
+d-i preseed/late_command string echo -e '#!/bin/sh -xe\\necho "Start post install..."\\n\\
+{% if postinstall_script %} wget -vO /target/root/postinstall_script {{ postinstall_script }}\\n\\
+chmod +x /target/root/postinstall_script\\n\\
+chroot /target /root/postinstall_script > /target/root/postinstall_script.log 2>&1\\n\\
+{% endif %}{% for cmd in postinstall_command_list %}chroot /target {{ cmd }}\\n\\
+{% endfor %}echo "Post install complete"\\n' > /target/root/post_script ; chmod +x /target/root/post_script ; ./target/root/post_script > /target/root/post_script.log 2>&1
 {% endif %}
-
-{% for cmd in postinstall_commands %}
-d-i preseed/late_command string chroot /target sh -c '{{ cmd }}'
-{% endfor %}
 """

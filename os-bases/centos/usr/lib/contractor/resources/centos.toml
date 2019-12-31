@@ -5,7 +5,7 @@
   mirror_server = 'mirror.centos.org'
   distro = 'centos'
   '>package_list:VCenter' = [ 'open-vm-tools' ]
-  virtualbox_guest_type = 'RedHat_64'
+  'virtualbox_guest_type:VirtualBox' = 'RedHat_64'
 
 [ structure.centos-6-base ]
   description = 'Base CentOS 6'
@@ -13,8 +13,8 @@
 [ structure.centos-6-base.config_values ]
   distro_version = '6'
   installer_pxe = 'centos-6'
-  vcenter_guest_id = 'centos6_64Guest'
-  azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '6.10', 'version' = 'latest' }
+  'vcenter_guest_id:VCenter' = 'centos6_64Guest'
+  'azure_image:Azure' = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '6.10', 'version' = 'latest' }
 
 [ structure.centos-7-base ]
   description = 'Base CentOS 7'
@@ -23,8 +23,8 @@
   memory_size = 2048  # centos 7 requires more minimum memory to install
   distro_version = '7'
   installer_pxe = 'centos-7'
-  vcenter_guest_id = 'centos7_64Guest'
-  azure_image = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '7.6', 'version' = 'latest' }
+  'vcenter_guest_id:VCenter' = 'centos7_64Guest'
+  'azure_image:Azure' = { 'publisher' = 'OpenLogic', 'offer' = 'CentOS', 'sku' = '7.6', 'version' = 'latest' }
 
 [ pxe.centos-6 ]
   boot_script = """echo CentOS 6 Installer
@@ -60,12 +60,12 @@ poweroff
 {{ package_list|join( "\n" ) }}
 %end
 
-{% if ( postinstall_script ) or ( postinstall_commands ) %}
+{% if ( postinstall_script ) or ( postinstall_command_list ) %}
 %post
 {% if postinstall_script %}
 chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
 {% endif %}
-{% for cmd in postinstall_commands %}
+{% for cmd in postinstall_command_list %}
 chroot /target sh -c '{{ cmd }}'
 {% endfor %}
 %end
@@ -105,12 +105,12 @@ poweroff
 {{ package_list|join( "\n" ) }}
 %end
 
-{% if ( postinstall_script ) or ( postinstall_commands ) %}
+{% if ( postinstall_script ) or ( postinstall_command_list ) %}
 %post
 {% if postinstall_script %}
 chroot /target sh -c '/usr/bin/curl -o /tmp/postinstall {{ postinstall_script }} && /bin/sh -x /tmp/postinstall'
 {% endif %}
-{% for cmd in postinstall_commands %}
+{% for cmd in postinstall_command_list %}
 chroot /target sh -c '{{ cmd }}'
 {% endfor %}
 %end

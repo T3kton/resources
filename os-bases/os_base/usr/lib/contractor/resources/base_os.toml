@@ -3,14 +3,15 @@
   scripts = { 'create' = 'linux-create', 'destroy' = 'linux-destroy' }
 [ structure.linux-base.config_values ]
   swap_size = 512
-  vcenter_guest_id = 'other26xLinux64Guest'
-  virtualbox_guest_type = 'Linux26_64'
+  'vcenter_guest_id:VCenter' = 'other26xLinux64Guest'
+  'virtualbox_guest_type:VirtualBox' = 'Linux26_64'
   root_password_hash = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
   'azure_admin_username:Azure' = 'CTRAdmin'
   'azure_admin_password:Azure' = 'CTRAdmin00'
+  'docker_port_list:Docker' = [ 22 ]
 
 [ script.linux-create ]
-  description ='Install Linux'
+  description = 'Install Linux'
   script = """# pxe boot and install
 check_port = 22
 
