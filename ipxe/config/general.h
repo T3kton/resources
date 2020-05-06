@@ -1,17 +1,14 @@
 #ifndef CONFIG_LOCAL_GENERAL_H
 #define CONFIG_LOCAL_GENERAL_H
 
-
-
 #define NET_PROTO_IPV4
 #define NET_PROTO_IPV6
 #undef  NET_PROTO_FCOE
 #undef  NET_PROTO_STP
 #undef  NET_PROTO_LACP
 
-#undef        PXE_STACK
-#undef        PXE_MENU
-
+#undef  PXE_STACK
+#undef  PXE_MENU
 
 #define DOWNLOAD_PROTO_TFTP
 #define DOWNLOAD_PROTO_HTTP
@@ -21,33 +18,49 @@
 #undef  DOWNLOAD_PROTO_NFS
 #undef  DOWNLOAD_PROTO_FILE
 
-#undef        SANBOOT_PROTO_ISCSI
-#undef        SANBOOT_PROTO_AOE
-#undef        SANBOOT_PROTO_IB_SRP
-#undef        SANBOOT_PROTO_FCP
-#undef        SANBOOT_PROTO_HTTP
+#undef  SANBOOT_PROTO_ISCSI
+#undef  SANBOOT_PROTO_AOE
+#undef  SANBOOT_PROTO_IB_SRP
+#undef  SANBOOT_PROTO_FCP
+#undef  SANBOOT_PROTO_HTTP
 
-#undef   HTTP_AUTH_BASIC
-#undef   HTTP_AUTH_DIGEST
+#undef  HTTP_AUTH_BASIC
+#undef  HTTP_AUTH_DIGEST
 
-#undef   CRYPTO_80211_WEP
-#undef   CRYPTO_80211_WPA
-#undef   CRYPTO_80211_WPA2
+#undef  CRYPTO_80211_WEP
+#undef  CRYPTO_80211_WPA
+#undef  CRYPTO_80211_WPA2
 
-#undef    IMAGE_NBI
-#undef    IMAGE_ELF
-#define   IMAGE_MULTIBOOT
-#define   IMAGE_PXE
-#undef    IMAGE_SCRIPT
-#define   IMAGE_BZIMAGE
-#define   IMAGE_COMBOOT
-#undef    IMAGE_EFI
-#undef    IMAGE_SDI
-#undef    IMAGE_PNM
-#define   IMAGE_PNG
-#undef    IMAGE_DER
-#undef    IMAGE_PEM
+#if(T3KTON_EFI)
+#undef  IMAGE_NBI
+#undef  IMAGE_ELF
+#undef  IMAGE_MULTIBOOT
+#undef  IMAGE_PXE
+#undef  IMAGE_SCRIPT
+#undef  IMAGE_BZIMAGE
+#undef  IMAGE_COMBOOT
+#define IMAGE_EFI
+#undef  IMAGE_SDI
+#undef  IMAGE_PNM
+#undef  IMAGE_PNG
+#undef  IMAGE_DER
+#undef  IMAGE_PEM
 
+#else
+#undef  IMAGE_NBI
+#undef  IMAGE_ELF
+#undef  IMAGE_MULTIBOOT
+#define IMAGE_PXE
+#undef  IMAGE_SCRIPT
+#undef  IMAGE_BZIMAGE
+#undef  IMAGE_COMBOOT
+#undef  IMAGE_EFI
+#undef  IMAGE_SDI
+#undef  IMAGE_PNM
+#undef  IMAGE_PNG
+#undef  IMAGE_DER
+#undef  IMAGE_PEM
+#endif /* T3KTON_EFI */
 
 #undef  AUTOBOOT_CMD            /* Automatic booting */
 #undef  NVO_CMD                 /* Non-volatile option storage commands */
@@ -86,9 +99,8 @@
 #undef  NONPNP_HOOK_INT19
 #undef  AUTOBOOT_ROM_FILTER
 
-#undef VNIC_IPOIB
-#undef VNIC_XSIGO
+#undef  VNIC_IPOIB
+#undef  VNIC_XSIGO
 
 
 #endif /* CONFIG_LOCAL_GENERAL_H */
-

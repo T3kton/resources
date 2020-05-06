@@ -3,7 +3,7 @@
 
 #define CONSOLE_PCBIOS
 
-#ifdef T3KTON_SOL
+#if(T3KTON_COM)
 
 #define CONSOLE_SERIAL
 
