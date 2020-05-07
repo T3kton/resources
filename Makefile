@@ -10,8 +10,6 @@ build/ipxe/var/lib/tftpboot/ipxe:
 	mkdir -p build/ipxe/var/lib/tftpboot
 	cp ipxe/bin/* build/ipxe/var/lib/tftpboot
 
-T3TKTON_SOL
-
 ubuntu-pxe:
 	mkdir -p os-bases/ubuntu/var/www/static/pxe/ubuntu-installer
 	[ -f os-bases/ubuntu/var/www/static/pxe/ubuntu-installer/initrd ] || wget http://archive.ubuntu.com/ubuntu/dists/bionic-updates/main/installer-amd64/current/images/netboot/ubuntu-installer/amd64/initrd.gz -O os-bases/ubuntu/var/www/static/pxe/ubuntu-installer/initrd
