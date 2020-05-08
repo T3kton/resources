@@ -3,8 +3,9 @@
 
 prompt --key s --timeout 5000 Press 's' for shell && goto do_shell ||
 
+:getip
 echo mac.........${net0/mac}
-dhcp net0
+dhcp net0 -c dhcp || goto retry
 
 echo hostname:...${net0/hostname}
 echo ip address:.${net0/ip}
@@ -18,11 +19,15 @@ echo Routing Table:
 route
 
 echo Getting Boot Script
-chain http://contractor/config/boot_script/
+chain http://contractor/config/boot_script/ || goto retry
 
 :do_shell
 echo Dropping to iPXE shell, docs at http://ipxe.org/cmd
-echo You probably want to "dhcp net0" first
+echo You probably want to "dhcp" first
 echo Type "exit" to continue with the boot process.
 shell
 goto top
+
+:retry
+sleep 5
+goto getip

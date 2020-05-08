@@ -31,35 +31,26 @@
 #undef  CRYPTO_80211_WPA
 #undef  CRYPTO_80211_WPA2
 
-#if(T3KTON_EFI)
+#define IMAGE_SCRIPT
 #undef  IMAGE_NBI
-#undef  IMAGE_ELF
 #undef  IMAGE_MULTIBOOT
-#undef  IMAGE_PXE
-#undef  IMAGE_SCRIPT
 #undef  IMAGE_BZIMAGE
 #undef  IMAGE_COMBOOT
-#define IMAGE_EFI
 #undef  IMAGE_SDI
 #undef  IMAGE_PNM
 #undef  IMAGE_PNG
 #undef  IMAGE_DER
 #undef  IMAGE_PEM
 
-#else
-#undef  IMAGE_NBI
+#if(T3KTON_EFI)
+#undef  IMAGE_PXE
+#define IMAGE_EFI
 #undef  IMAGE_ELF
-#undef  IMAGE_MULTIBOOT
+
+#else
 #define IMAGE_PXE
-#undef  IMAGE_SCRIPT
-#undef  IMAGE_BZIMAGE
-#undef  IMAGE_COMBOOT
 #undef  IMAGE_EFI
-#undef  IMAGE_SDI
-#undef  IMAGE_PNM
-#undef  IMAGE_PNG
-#undef  IMAGE_DER
-#undef  IMAGE_PEM
+#define IMAGE_ELF
 #endif /* T3KTON_EFI */
 
 #undef  AUTOBOOT_CMD            /* Automatic booting */
