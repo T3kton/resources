@@ -5,7 +5,8 @@
   swap_size = 512
   'vcenter_guest_id:VCenter' = 'other26xLinux64Guest'
   'virtualbox_guest_type:VirtualBox' = 'Linux26_64'
-  root_password_hash = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
+  'proxmox_ostype:Proxmox' = 'l26'
+  'root_password_hash' = '$6$rootroot$oLo.loyMV45VA7/0sKV5JH/xBAXiq/igL4hQrGz3yd9XUavmC82tZm1lxW2N.5eLxQUlqp53wXKRzifZApP0/1'
   'azure_admin_username:Azure' = 'CTRAdmin'
   'azure_admin_password:Azure' = 'CTRAdmin00'
   'docker_port_list:Docker' = [ 22 ]
@@ -72,5 +73,5 @@ else
 
 [ pxe.normal-boot ]
   boot_script = """echo Booting form Primary Boot Disk
-sanboot --no-describe --drive 0x80 || echo Primary Boot Disk is not Bootable"""
+sanboot --no-describe --drive 0x80 || exit 1 || echo Primary Boot Disk is not Bootable"""
   template = '# Normal Boot'

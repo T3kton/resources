@@ -8,6 +8,7 @@ echo mac.........${net0/mac}
 dhcp net0 -c dhcp || goto retry
 
 echo hostname:...${net0/hostname}
+echo Config UUID:${210:string}
 echo ip address:.${net0/ip}
 echo gateway ip:.${net0/gateway}
 echo netmask:....${net0/netmask}
@@ -19,15 +20,20 @@ echo Routing Table:
 route
 
 echo Getting Boot Script
+
+isset ${210} && goto w_config ||
 chain http://contractor/config/boot_script/ || goto retry
+
+:w_config
+chain http://contractor/config/boot_script/c/${210:string} || goto retry
 
 :do_shell
 echo Dropping to iPXE shell, docs at http://ipxe.org/cmd
-echo You probably want to "dhcp" first
+echo You probably want to "dhcp net0" first
 echo Type "exit" to continue with the boot process.
 shell
 goto top
 
 :retry
-sleep 5
+sleep 10
 goto getip
