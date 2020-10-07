@@ -34,6 +34,14 @@
   'docker_image:Docker' = 'ubuntu:bionic'
   'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
 
+[ structure.ubuntu-focal-base ]
+  description = 'Base Ubuntu Focal Fossa (20.04 LTS)'
+  parents = [ 'ubuntu-base' ]
+[ structure.ubuntu-focal-base.config_values ]
+  distro_version = 'focal'
+  'docker_image:Docker' = 'ubuntu:focal'
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '20.04-LTS', 'version' = 'latest' }
+
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
 kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true ksdevice=bootif interface={{ _primary_interface }} domain={{ _domain_name }} hostname={{ _hostname }} BOOTIF={{ _primary_interface_mac.replace( ':', '-' ) }}

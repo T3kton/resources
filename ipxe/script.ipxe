@@ -5,7 +5,7 @@ prompt --key s --timeout 5000 Press 's' for shell && goto do_shell ||
 
 :getip
 echo mac.........${net0/mac}
-dhcp net0 -c dhcp || goto retry
+dhcp net0 || goto retry
 
 echo hostname:...${net0/hostname}
 echo Config UUID:${210:string}

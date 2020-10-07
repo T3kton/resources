@@ -22,17 +22,24 @@ sflinks = [
                                 'apt remove -y linux-image-amd64 linux-image-4.19*',
                                 'update-grub'
                               ]
-
+# apt instal openvswitch-switch ethtool
+#
 # configure additional storage
 # configure additional networking  - requires rebooting
-# 
-# iface vmbr0 inet static
-#         address  10.10.10.1
-#         netmask  255.255.255.0
-#         bridge_ports none
-#         bridge_stp off
-#         bridge_fd 0
+#
+
+# allow-ovs vmbr1
+# iface vmbr1 inet static
+#         address 169.254.0.1
+#         ovs_type OVSBridge
+#         ovs_ports geneve1
 #
 #         post-up   echo 1 > /proc/sys/net/ipv4/ip_forward
-#         post-up   iptables -t nat -A POSTROUTING -s '10.10.10.0/24' -o eno1 -j MASQUERADE
-#         post-down iptables -t nat -D POSTROUTING -s '10.10.10.0/24' -o eno1 -j MASQUERADE
+#         post-up   iptables -t nat -A POSTROUTING -s '169.254.0.1/24' -o vmbr0 -j MASQUERADE
+#         post-down iptables -t nat -D POSTROUTING -s '169.254.0.1/24' -o vmbr0 -j MASQUERADE
+
+
+# install dhcp-helper
+
+# /etc/default/dhcp-helper
+# DHCPHELPER_OPTS="-s 172.16.0.10 -e vmbr0 -e vmbr1"
