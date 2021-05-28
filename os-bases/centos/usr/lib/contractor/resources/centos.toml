@@ -11,6 +11,7 @@
   description = 'Base CentOS 6'
   parents = [ 'centos-base' ]
 [ structure.centos-6-base.config_values ]
+  mirror_server = 'vault.centos.org'
   distro_version = '6'
   installer_pxe = 'centos-6'
   'vcenter_guest_id:VCenter' = 'centos6_64Guest'
@@ -33,7 +34,7 @@ initrd {{ __pxe_location }}/centos-installer/6.initrd
 boot
 """
   template = """install
-url --url=http://{{ mirror_server }}/centos/6/os/x86_64{% if mirror_proxy %} --proxy={{ mirror_proxy }}{% endif %}
+url --url=http://{{ mirror_server }}/centos/6.10/os/x86_64{% if mirror_proxy %} --proxy={{ mirror_proxy }}{% endif %}
 lang en_US.UTF-8
 keyboard us
 network --hostname={{ _fqdn }}

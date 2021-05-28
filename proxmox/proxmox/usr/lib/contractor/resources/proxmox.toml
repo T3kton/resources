@@ -39,6 +39,9 @@ sflinks = [
 #         post-down iptables -t nat -D POSTROUTING -s '169.254.0.1/24' -o vmbr0 -j MASQUERADE
 
 
+# enable embeded pve
+# https://docs.fedoraproject.org/en-US/quick-docs/using-nested-virtualization-in-kvm/
+
 # install dhcp-helper
 
 # /etc/default/dhcp-helper

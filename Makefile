@@ -18,8 +18,8 @@ ubuntu-pxe:
 
 centos-pxe:
 	mkdir -p os-bases/centos/var/www/static/pxe/centos-installer
-	[ -f os-bases/centos/var/www/static/pxe/centos-installer/6.initrd ] || wget http://mirror.centos.org/centos/6/os/x86_64/images/pxeboot/initrd.img -O os-bases/centos/var/www/static/pxe/centos-installer/6.initrd
-	[ -f os-bases/centos/var/www/static/pxe/centos-installer/6.vmlinuz ] || wget http://mirror.centos.org/centos/6/os/x86_64/images/pxeboot/vmlinuz -O os-bases/centos/var/www/static/pxe/centos-installer/6.vmlinuz
+	[ -f os-bases/centos/var/www/static/pxe/centos-installer/6.initrd ] || wget https://vault.centos.org/6.10/os/x86_64/images/pxeboot/initrd.img -O os-bases/centos/var/www/static/pxe/centos-installer/6.initrd
+	[ -f os-bases/centos/var/www/static/pxe/centos-installer/6.vmlinuz ] || wget https://vault.centos.org/6.10/os/x86_64/images/pxeboot/vmlinuz -O os-bases/centos/var/www/static/pxe/centos-installer/6.vmlinuz
 	[ -f os-bases/centos/var/www/static/pxe/centos-installer/7.initrd ] || wget http://mirror.centos.org/centos/7/os/x86_64/images/pxeboot/initrd.img -O os-bases/centos/var/www/static/pxe/centos-installer/7.initrd
 	[ -f os-bases/centos/var/www/static/pxe/centos-installer/7.vmlinuz ] || wget http://mirror.centos.org/centos/7/os/x86_64/images/pxeboot/vmlinuz -O os-bases/centos/var/www/static/pxe/centos-installer/7.vmlinuz
 	touch centos-pxe
