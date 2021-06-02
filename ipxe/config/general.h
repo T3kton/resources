@@ -34,7 +34,6 @@
 #define IMAGE_SCRIPT
 #undef  IMAGE_NBI
 #undef  IMAGE_MULTIBOOT
-#undef  IMAGE_BZIMAGE
 #undef  IMAGE_COMBOOT
 #undef  IMAGE_SDI
 #undef  IMAGE_PNM
@@ -46,11 +45,14 @@
 #undef  IMAGE_PXE
 #define IMAGE_EFI
 #undef  IMAGE_ELF
+#undef  IMAGE_BZIMAGE
 
 #else
 #define IMAGE_PXE
 #undef  IMAGE_EFI
 #define IMAGE_ELF
+#define IMAGE_BZIMAGE
+
 #endif /* T3KTON_EFI */
 
 #undef  AUTOBOOT_CMD            /* Automatic booting */

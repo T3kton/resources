@@ -34,9 +34,17 @@
   'docker_image:Docker' = 'ubuntu:bionic'
   'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '18.04-LTS', 'version' = 'latest' }
 
+[ structure.ubuntu-focal-base ]
+  description = 'Base Ubuntu Focal Fossa (20.04 LTS)'
+  parents = [ 'ubuntu-base' ]
+[ structure.ubuntu-focal-base.config_values ]
+  distro_version = 'focal'
+  'docker_image:Docker' = 'ubuntu:focal'
+  'azure_image:Azure' = { 'publisher' = 'Canonical', 'offer' = 'UbuntuServer', 'sku' = '20.04-LTS', 'version' = 'latest' }
+
 [ pxe.ubuntu ]
   boot_script = """echo Ubuntu Installer
-kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true domain={{ _domain_name }} hostname={{ _hostname }}
+kernel {{ __pxe_location }}/ubuntu-installer/vmlinuz auto url={{ __pxe_template_location }} locale=en_US.UTF-8 keyboard-configuration/layoutcode=us netcfg/no_default_route=true ksdevice=bootif interface={{ _primary_interface }} domain={{ _domain_name }} hostname={{ _hostname }} BOOTIF={{ _primary_interface_mac.replace( ':', '-' ) }}
 initrd {{ __pxe_location }}/ubuntu-installer/initrd
 boot
 """
@@ -48,14 +56,14 @@ d-i keyboard-configuration/xkb-keymap select us
 ### Network settings
 d-i netcfg/enable boolean true
 d-i netcfg/disable_autoconfig boolean true
-d-i netcfg/choose_interface select auto
-
 d-i netcfg/disable_dhcp boolean true
 
-d-i netcfg/get_ipaddress string {{ _interface_map.eth0.address_list.0.address }}
-d-i netcfg/get_netmask string {{ _interface_map.eth0.address_list.0.netmask }}
-{% if _interface_map.eth0.address_list.0.gateway %}
-d-i netcfg/get_gateway string {{ _interface_map.eth0.address_list.0.gateway }}
+d-i netcfg/choose_interface select {{ _primary_interface }}
+
+d-i netcfg/get_ipaddress string {{ _primary_address.address }}
+d-i netcfg/get_netmask string {{ _primary_address.netmask }}
+{% if _primary_address.gateway %}
+d-i netcfg/get_gateway string {{ _primary_address.gateway }}
 {% else %}
 d-i netcfg/get_gateway string
 d-i netcfg/no_default_route boolean true
@@ -94,7 +102,7 @@ d-i clock-setup/ntp-server string {{ ntp_servers.0 }}
 
 ### Partitioning
 ## Partitioning example
-d-i partman-auto/disk string /dev/sda
+d-i partman-auto/disk string {{ install_device|default( '/dev/sda' ) }}
 d-i partman-auto/method string regular
 d-i partman-lvm/device_remove_lvm boolean true
 d-i partman-md/device_remove_md boolean true
@@ -124,16 +132,17 @@ popularity-contest popularity-contest/participate boolean false
 ### Boot loader installation
 d-i grub-installer/only_debian boolean true
 d-i grub-installer/with_other_os boolean true
-d-i grub-installer/bootdev  string /dev/sda
+d-i grub-installer/bootdev string {{ boot_device|default( '/dev/sda' ) }}
 
 ### Finishing up the installation
+d-i finish-install/keep-consoles boolean true
 d-i finish-install/reboot_in_progress note
 d-i debian-installer/exit/poweroff boolean true
 
 ### Needed to get the network config to save
 d-i preseed/early_command string kill-all-dhcp; netcfg
 
-### Post install 
+### Post install
 {% if postinstall_script or postinstall_command_list %}
 d-i preseed/late_command string echo -e '#!/bin/sh -xe\\necho "Start post install..."\\n\\
 {% if postinstall_script %} wget -vO /target/root/postinstall_script {{ postinstall_script }}\\n\\

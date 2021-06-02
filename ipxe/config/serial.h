@@ -18,6 +18,15 @@
 
 #endif /* T3TKTON_SOL */
 
+#undef  COMPRESERVE
+
+#ifndef COMPRESERVE
+#define COMSPEED        115200          /* Baud rate */
+#define COMDATA         8               /* Data bits */
+#define COMPARITY       0               /* Parity: 0=None, 1=Odd, 2=Even */
+#define COMSTOP         1               /* Stop bits */
+#endif
+
 #endif /* T3TKTON_SOL */
 
 
