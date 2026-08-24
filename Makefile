@@ -39,7 +39,7 @@ vcenter-ova:
 
 clean:
 	$(MAKE) -C ipxe clean
-	$(RM) build/ipxe/srv/tftp
+	$(RM) -r build/ipxe/srv/tftp
 	$(RM) -r build
 	$(RM) *.respkg
 	$(RM) ubuntu-pxe
@@ -57,7 +57,7 @@ dist-clean: clean
 .PHONY:: all version clean dist-clean
 
 respkg-blueprints:
-	echo ubuntu-focal-base
+	echo ubuntu-noble-base
 
 respkg-requires:
 	echo respkg fakeroot build-essential liblzma-dev xorriso
