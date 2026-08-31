@@ -1,11 +1,15 @@
 #ifndef CONFIG_LOCAL_CONSOLE_H
 #define CONFIG_LOCAL_CONSOLE_H
 
-#define CONSOLE_PCBIOS
-
 #if(T3KTON_COM)
 
+#undef CONSOLE_PCBIOS
 #define CONSOLE_SERIAL
+
+#else
+
+#define CONSOLE_PCBIOS
+#undef CONSOLE_SERIAL
 
 #endif /* T3TKTON_SOL */
 
