@@ -14,3 +14,5 @@ esx-pxe
 respkg
 
 *.respkg
+
+.vscode
